@@ -1,6 +1,6 @@
-package br.ufscar.dc.dsw.domain;
+package br.ufscar.dc.dsw.model;
 
-import br.ufscar.dc.dsw.domain.enums.Severity;
+import br.ufscar.dc.dsw.model.enums.Severity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 

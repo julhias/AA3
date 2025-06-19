@@ -1,6 +1,6 @@
 package br.ufscar.dc.dsw.repositories;
 
-import br.ufscar.dc.dsw.domain.Estrategia;
+import br.ufscar.dc.dsw.model.Estrategia;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

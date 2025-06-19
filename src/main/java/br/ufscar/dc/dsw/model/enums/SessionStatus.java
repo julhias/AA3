@@ -1,4 +1,4 @@
-package br.ufscar.dc.dsw.domain.enums;
+package br.ufscar.dc.dsw.model.enums;
 
 public enum SessionStatus {
     CRIADA,

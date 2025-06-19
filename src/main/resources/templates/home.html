@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{app.title.home}">Página Inicial</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <h2 th:text="#{home.welcome.generic}">Bem-vindo(a) ao Sistema!</h2>
+    <p>Por favor, faça o login para acessar a área administrativa.</p>
+    <a th:href="@{/login}" class="btn btn-primary" th:text="#{home.login.button}">Fazer Login</a>
+</div>
+</body>
+</html>

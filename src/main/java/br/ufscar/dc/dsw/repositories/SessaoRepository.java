@@ -1,6 +1,6 @@
 package br.ufscar.dc.dsw.repositories;
 
-import br.ufscar.dc.dsw.domain.Sessao;
+import br.ufscar.dc.dsw.model.Sessao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

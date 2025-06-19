@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8" />
+</head>
+<body>
+<section class="layout-content" layout:fragment="corpo">
+
+  <nav class="navbar navbar-expand-md bg-light">
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active"><i class="oi oi-caret-right"></i>
+          <span th:text="#{usuario.cadastrar.label}"></span></li>
+      </ul>
+      <a class="btn btn-primary btn-md" th:href="@{/usuarios/listar}"
+         role="button"> <span class="oi oi-spreadsheet" title="Listar"
+                              aria-hidden="true"></span> <span th:text="#{usuario.listar.label}"></span>
+      </a>
+    </div>
+  </nav>
+
+  <div class="container" id="cadastro">
+
+    <div th:replace="~{fragments/alert}"></div>
+
+    <form
+            th:action="${usuario.id == null} ? @{/usuarios/salvar} : @{/usuarios/editar}"
+            th:object="${usuario}" method="POST">
+
+      <input type="hidden" id="id" th:field="*{id}" />
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label th:text="#{usuario.name.label}" for="name"></label> 
+          <input type="text" class="form-control" id="name" th:field="*{nome}"
+                 th:placeholder="#{usuario.name.label}" autofocus="autofocus"
+                 th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'" />
+
+          <div class="invalid-feedback">
+            <span th:errors="*{nome}"></span>
+          </div>
+        </div>
+
+        <div class="form-group col-md-6">
+          <label th:text="#{usuario.username.label}" for="login"></label> 
+          <input type="text" class="form-control" id="login"
+                 th:placeholder="#{usuario.username.label}"
+                 autofocus="autofocus" th:field="*{login}"
+                 th:classappend="${#fields.hasErrors('login')} ? 'is-invalid'" />
+
+          <div class="invalid-feedback">
+            <span th:errors="*{login}"></span>
+          </div>
+        </div>
+
+        <div class="form-group col-md-6">
+          <label th:text="#{usuario.password.label}" for="senha"></label> 
+          <input type="password" class="form-control" id="senha"
+                 th:placeholder="${usuario.id == null} ? #{usuario.password.label} : 'Deixe em branco para manter a senha atual'"
+                 autofocus="autofocus"
+                 th:field="*{senha}"
+                 th:classappend="${#fields.hasErrors('senha')} ? 'is-invalid'" />
+
+          <div class="invalid-feedback">
+            <span th:errors="*{senha}"></span>
+          </div>
+        </div>
+
+        <div class="form-group col-md-6">
+          <label th:text="#{usuario.role.label}" for="tipo"></label> 
+          <select id="tipo" class="form-control" th:field="*{tipo}"
+                  th:classappend="${#fields.hasErrors('tipo')} ? 'is-invalid'">
+            <option th:each="role : ${T(br.ufscar.dc.dsw.model.enums.Role).values()}"
+                    th:value="${role}" th:text="${role.name()}"></option>
+          </select>
+
+          <div class="invalid-feedback">
+            <span th:errors="*{tipo}"></span>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" th:text="#{button.salvar.label}"
+              class="btn btn-primary btn-sm"></button>
+    </form>
+  </div>
+</section>
+</body>
+</html>

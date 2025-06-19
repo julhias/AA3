@@ -1,4 +1,4 @@
-package br.ufscar.dc.dsw.domain;
+package br.ufscar.dc.dsw.model;
 
 import jakarta.persistence.*;
 

@@ -1,6 +1,6 @@
-package br.ufscar.dc.dsw.domain;
+package br.ufscar.dc.dsw.model;
 
-import br.ufscar.dc.dsw.domain.enums.Role;
+import br.ufscar.dc.dsw.model.enums.Role;
 import jakarta.persistence.*;
 
 import static jakarta.persistence.GenerationType.SEQUENCE;
