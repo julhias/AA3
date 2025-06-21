@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<section class="layout-content" layout:fragment="corpo">
+
+    <nav class="navbar navbar-expand-md bg-light">
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <i class="oi oi-caret-right"></i>
+                    <span th:text="${estrategia.id == null} ? #{estrategia.register.label} : #{estrategia.edit.label}"></span>
+                </li>
+            </ul>
+            <a class="btn btn-primary btn-md" th:href="@{/admin/estrategias/listar}" role="button">
+                <span th:text="#{strategy.list.label}"></span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container" id="cadastro">
+
+        <div th:replace="~{fragments/alert}"></div>
+
+        <form th:action="@{/admin/estrategias/salvar}" th:object="${estrategia}" method="POST">
+            <input type="hidden" id="id" th:field="*{id}"/>
+            
+            <div class="form-group">
+                <label th:text="#{estrategia.name.label}" for="nome"></label>
+                <input type="text" class="form-control" id="nome" th:field="*{nome}" th:classappend="${#fields.hasErrors('nome')} ? 'is-invalid'"/>
+                <div class="invalid-feedback">
+                    <span th:errors="*{nome}"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{estrategia.description.label}" for="descricao"></label>
+                <textarea class="form-control" id="descricao" th:field="*{descricao}" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{estrategia.examples.label}" for="exemplos"></label>
+                <textarea class="form-control" id="exemplos" th:field="*{exemplos}" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label th:text="#{estrategia.tips.label}" for="dicas"></label>
+                <textarea class="form-control" id="dicas" th:field="*{dicas}" rows="3"></textarea>
+            </div>
+
+            <button type="submit" th:text="#{button.salvar.label}" class="btn btn-primary btn-sm"></button>
+        </form>
+    </div>
+</section>
+</body>
+</html>

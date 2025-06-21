@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<section class="layout-content" layout:fragment="corpo">
+    <nav class="navbar navbar-expand-md bg-light">
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <i class="oi oi-caret-right"></i>
+                    <span th:text="#{strategy.list.admin.label}"></span>
+                </li>
+            </ul>
+            <a class="btn btn-primary btn-md" th:href="@{/admin/estrategias/cadastrar}" role="button">
+                <span th:text="#{strategy.new.label}"></span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container" id="listagem">
+        <div th:replace="~{fragments/alert}"></div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th th:text="#{estrategia.name.label}"></th>
+                    <th th:text="#{estrategia.description.label}"></th>
+                    <th th:text="#{action.label}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="estrategia : ${estrategias}">
+                    <td th:text="${estrategia.id}"></td>
+                    <td th:text="${estrategia.nome}"></td>
+                    <td th:text="${#strings.abbreviate(estrategia.descricao, 100)}"></td>
+                    <td colspan="2">
+                        <a class="btn btn-info btn-sm" th:href="@{/admin/estrategias/editar/{id}(id=${estrategia.id})}" role="button">
+                            <span th:text="#{button.edit.label}"></span>
+                        </a>
+                        <a class="btn btn-danger btn-sm" th:href="@{/admin/estrategias/excluir/{id}(id=${estrategia.id})}"
+                           th:data-confirm-text="#{confirm.delete.message}"
+                           onclick="return confirm(this.getAttribute('data-confirm-text'));">
+                            <span th:text="#{button.delete.label}"></span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

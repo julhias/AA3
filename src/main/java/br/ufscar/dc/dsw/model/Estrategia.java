@@ -45,6 +45,12 @@ public class Estrategia {
     private String descricao;
 
     @Column(
+            name = "exemplos",
+            columnDefinition = "TEXT"
+    )
+    private String exemplos;
+
+    @Column(
             name = "dicas",
             columnDefinition = "TEXT"
     )
@@ -84,6 +90,14 @@ public class Estrategia {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getExemplos() {
+        return exemplos;
+    }
+
+    public void setExemplos(String exemplos) {
+        this.exemplos = exemplos;
     }
 
     public String getDicas() {
