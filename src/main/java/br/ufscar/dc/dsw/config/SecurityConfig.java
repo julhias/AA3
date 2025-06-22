@@ -46,25 +46,31 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        // Libera o acesso às páginas públicas
-                        .requestMatchers("/", "/home", "/css/**", "/js/**", "/public/**", "/login").permitAll()
-                        // Protege a área de usuários, só para ADMIN
-                        .requestMatchers("/usuarios/**").hasRole("ADMIN")
-                        // Protege a nova área admin, só para ADMIN
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        // Qualquer outra requisição precisa de autenticação
+                        .requestMatchers("/", "/home", "/css/**", "/js/**", "/public/**", "/login", "/public/estrategias").permitAll()
+
+                        .requestMatchers("/usuarios/**", "/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/testador/home", "/testador/estrategias", "/testador/minhas-sessoes", "/testador/criar-sessao").hasRole("TESTER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
-                        // MUDANÇA IMPORTANTE: Redireciona para o painel do admin após o login
-                        .defaultSuccessUrl("/admin/home", true)
+                        .successHandler((request, response, authentication) -> {
+                            if (authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                                response.sendRedirect("/admin/home");
+                            } else if (authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_TESTER"))) {
+                                response.sendRedirect("/testador/home");
+                            } else {
+                                response.sendRedirect("/home");
+                            }
+                        })
                         .failureUrl("/login?error=true")
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .logoutSuccessUrl("/login?logout=true")
+                        .logoutSuccessUrl("/home?logout=true")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()

@@ -1,78 +1,51 @@
 <!DOCTYPE html>
-<html lang="pt" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel do Administrador</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta charset="UTF-8"/>
+    <title th:text="#{admin.dashboard.title}">Painel do Administrador</title>
 </head>
 <body>
+<section layout:fragment="corpo">
+    <div class="container mt-4">
+        <h2 th:text="#{admin.dashboard.header}">Painel do Administrador</h2>
+        <p th:text="#{admin.dashboard.welcome(${#authentication.name})}">Bem-vindo(a), [Nome do Admin]! A partir daqui, você pode gerenciar os recursos do sistema.</p>
 
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" th:href="@{/}">GTest</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" th:href="@{/admin/home}">Painel Admin</a>
-                </li>
+        <hr/>
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/public/estrategias}">Estratégias</a>
-                </li>
+        <div class="row mt-4">
 
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/admin/projetos/listar}">Projetos</a>
-                </li>
-
-            </ul>
-             <form th:action="@{/logout}" method="post">
-                <button type="submit" class="btn btn-outline-light">Sair</button>
-            </form>
-        </div>
-    </nav>
-</header>
-
-<main role="main" class="container">
-    <div class="mt-4">
-        <h2>Painel do Administrador</h2>
-        <p>Bem-vindo, <strong sec:authentication="name"></strong>!</p>
-        <p>A partir daqui, você pode gerenciar os recursos do sistema.</p>
-    </div>
-
-  <hr/>
-
-  <div class="row mt-4">
-    
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Gerenciamento de Usuários</h4>
-                <p class="card-text">Crie, edite e remova os usuários (admins e testadores) do sistema.</p>
-                <a th:href="@{/usuarios/listar}" class="btn btn-primary">Gerenciar Usuários</a>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title" th:text="#{admin.card.manageUsers.title}">Gerenciamento de Usuários</h4>
+                        <p class="card-text" th:text="#{admin.card.manageUsers.text}">Crie, edite e remova os usuários (admins e testadores) do sistema.</p>
+                        <a th:href="@{/usuarios/listar}" class="btn btn-primary" th:text="#{admin.card.manageUsers.button}">Gerenciar Usuários</a>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Gerenciamento de Estratégias</h4>
-                <p class="card-text">Crie, edite e remova as estratégias de teste disponíveis no sistema.</p>
-                <a th:href="@{/admin/estrategias/listar}" class="btn btn-primary">Gerenciar Estratégias</a>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title" th:text="#{admin.card.manageStrategies.title}">Gerenciamento de Estratégias</h4>
+                        <p class="card-text" th:text="#{admin.card.manageStrategies.text}">Crie, edite e remova as estratégias de teste disponíveis no sistema.</p>
+                        <a th:href="@{/admin/estrategias/listar}" class="btn btn-primary" th:text="#{admin.card.manageStrategies.button}">Gerenciar Estratégias</a>
+                    </div>
+                </div>
             </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title" th:text="#{admin.card.manageProjects.title}">Gerenciamento de Projetos</h4>
+                        <p class="card-text" th:text="#{admin.card.manageProjects.text}">Crie, edite e remova os projetos do sistema.</p>
+                        <a th:href="@{/admin/projetos/listar}" class="btn btn-primary" th:text="#{admin.card.manageProjects.button}">Gerenciar Projetos</a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-
-      <div class="col-md-6 mb-4">
-          <div class="card">
-              <div class="card-body">
-                  <h4 class="card-title">Gerenciamento de Projetos</h4>
-                  <p class="card-text">Crie, edite e remova os projetos do sistema.</p>
-                  <a th:href="@{/admin/projetos/listar}" class="btn btn-primary">Gerenciar Projetos</a>
-              </div>
-          </div>
-      </div>
-  </div> </main>
+</section>
 </body>
 </html>

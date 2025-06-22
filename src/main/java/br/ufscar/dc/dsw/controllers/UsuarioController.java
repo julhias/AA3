@@ -25,13 +25,13 @@ public class UsuarioController {
     @GetMapping("/listar")
     public String listar(Model model) {
         model.addAttribute("usuarios", usuarioRepository.findAll());
-        return "usuario/lista"; // Retorna o nome da view Thymeleaf
+        return "usuario/lista";
     }
 
     @GetMapping("/cadastrar")
     public String cadastrar(Model model) {
         model.addAttribute("usuario", new Usuario());
-        return "usuario/cadastro"; // Retorna o nome da view Thymeleaf
+        return "usuario/cadastro";
     }
 
     @PostMapping("/salvar")
@@ -42,7 +42,7 @@ public class UsuarioController {
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuarioRepository.save(usuario);
         attr.addFlashAttribute("sucesso", "Usuário salvo com sucesso.");
-        return "redirect:/usuarios/listar"; // Redireciona para a lista
+        return "redirect:/usuarios/listar";
     }
 
     @GetMapping("/editar/{id}")
@@ -55,12 +55,10 @@ public class UsuarioController {
 
     @PostMapping("/editar")
     public String editar(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult result, RedirectAttributes attr) {
-        // Se a senha veio vazia no formulário, mantém a senha original
         if (usuario.getSenha() == null || usuario.getSenha().isEmpty()) {
             String senhaOriginal = usuarioRepository.findById(usuario.getId()).get().getSenha();
             usuario.setSenha(senhaOriginal);
         } else {
-            // Se uma nova senha foi digitada, criptografa ela
             usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         }
 

@@ -1,0 +1,17 @@
+﻿# Ignorar diretórios de build do Maven/Gradle
+target/
+build/
+
+# Ignorar diretórios do IntelliJ IDEA
+.idea/
+# Exceção para dataSources.xml se você compartilha e quer versionar
+!.idea/dataSources.xml
+
+# Ignorar arquivos de classe e JARs/WARs
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignorar arquivos de log
+*.log
