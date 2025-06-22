@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+<section class="layout-content" layout:fragment="corpo">
+    <nav class="navbar navbar-expand-md bg-light">
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <i class="oi oi-caret-right"></i>
+                    <span th:text="#{projeto.list.admin.label}"></span>
+                </li>
+            </ul>
+            <a class="btn btn-primary btn-md" th:href="@{/admin/projetos/cadastrar}" role="button">
+                <span th:text="#{projeto.new.label}"></span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container" id="listagem">
+        <div th:replace="~{fragments/alert}"></div>
+
+        <div class="mb-3">
+            <label for="sortSelect" th:text="#{list.sort.by.label}"></label>
+            <select id="sortSelect" class="form-control d-inline-block w-auto" onchange="location = this.value;">
+                <option th:selected="${currentSortBy == 'nome'}" th:value="@{/admin/projetos/listar(sortBy='nome')}" th:text="#{projeto.name.label}"></option>
+                <option th:selected="${currentSortBy == 'criadoEm'}" th:value="@{/admin/projetos/listar(sortBy='criadoEm')}" th:text="#{projeto.creationDate.label}"></option>
+            </select>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-sm">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th th:text="#{projeto.name.label}"></th>
+                    <th th:text="#{projeto.description.label}"></th>
+                    <th th:text="#{projeto.creationDate.label}"></th>
+                    <th th:text="#{action.label}"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="projeto : ${projetos}">
+                    <td th:text="${projeto.id}"></td>
+                    <td th:text="${projeto.nome}"></td>
+                    <td th:text="${#strings.abbreviate(projeto.descricao, 100)}"></td>
+                    <td th:text="${#temporals.format(projeto.criadoEm, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td colspan="2">
+                        <a class="btn btn-info btn-sm" th:href="@{/admin/projetos/editar/{id}(id=${projeto.id})}" role="button">
+                            <span th:text="#{button.edit.label}"></span>
+                        </a>
+                        <a class="btn btn-danger btn-sm" th:href="@{/admin/projetos/excluir/{id}(id=${projeto.id})}"
+                           th:data-confirm-text="#{confirm.delete.message}"
+                           onclick="return confirm(this.getAttribute('data-confirm-text'));">
+                            <span th:text="#{button.delete.label}"></span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

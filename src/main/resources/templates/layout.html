@@ -15,11 +15,15 @@
         <a class="navbar-brand" th:href="@{/}">GTest</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/public/estrategias}" th:text="#{menu.strategies}">Estratégias</a>
+                <li class="nav-item active"> <a class="nav-link" th:href="@{/admin/home}">Painel Admin</a>
                 </li>
-                <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/home}" th:text="#{menu.admin.panel}">Painel Admin</a>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/public/estrategias}">Estratégias</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/projetos/listar}">Projetos</a>
                 </li>
             </ul>
              <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">

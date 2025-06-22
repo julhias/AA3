@@ -14,11 +14,17 @@
         <a class="navbar-brand" th:href="@{/}">GTest</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
+                <li class="nav-item active"> <a class="nav-link" th:href="@{/admin/home}">Painel Admin</a>
+                </li>
+
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/public/estrategias}">Estratégias</a>
                 </li>
-                <li class="nav-item active"> <a class="nav-link" th:href="@{/admin/home}">Painel Admin</a>
+
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/admin/projetos/listar}">Projetos</a>
                 </li>
+
             </ul>
              <form th:action="@{/logout}" method="post">
                 <button type="submit" class="btn btn-outline-light">Sair</button>
@@ -58,6 +64,15 @@
         </div>
     </div>
 
+      <div class="col-md-6 mb-4">
+          <div class="card">
+              <div class="card-body">
+                  <h4 class="card-title">Gerenciamento de Projetos</h4>
+                  <p class="card-text">Crie, edite e remova os projetos do sistema.</p>
+                  <a th:href="@{/admin/projetos/listar}" class="btn btn-primary">Gerenciar Projetos</a>
+              </div>
+          </div>
+      </div>
   </div> </main>
 </body>
 </html>

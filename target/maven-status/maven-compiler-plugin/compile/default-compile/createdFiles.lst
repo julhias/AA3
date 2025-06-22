@@ -15,6 +15,7 @@ br\ufscar\dc\dsw\services\UsuarioDetailsService.class
 br\ufscar\dc\dsw\controllers\EstrategiaAdminController.class
 br\ufscar\dc\dsw\model\Bug.class
 br\ufscar\dc\dsw\model\Usuario.class
+br\ufscar\dc\dsw\services\ProjetoService.class
 br\ufscar\dc\dsw\repositories\UsuarioRepository.class
 br\ufscar\dc\dsw\model\Sessao.class
 br\ufscar\dc\dsw\model\Imagem.class
@@ -22,5 +23,6 @@ br\ufscar\dc\dsw\config\DataLoader.class
 br\ufscar\dc\dsw\repositories\BugRepository.class
 br\ufscar\dc\dsw\utils\AdminPasswordGenerator.class
 br\ufscar\dc\dsw\controllers\AdminController.class
+br\ufscar\dc\dsw\controllers\ProjetoAdminController.class
 br\ufscar\dc\dsw\model\enums\Role.class
 br\ufscar\dc\dsw\repositories\EstrategiaRepository.class

@@ -1,6 +1,7 @@
 package br.ufscar.dc.dsw.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class Projeto {
     )
     private Integer id;
 
+    @NotBlank(message = "{NotBlank.projeto.nome}")
     @Column(
             name = "nome",
             nullable = false,
@@ -66,6 +68,11 @@ public class Projeto {
     }
 
     public Projeto() {
+    }
+
+    public Projeto(String nome, String descricao) { // Added a new constructor for convenience
+        this.nome = nome;
+        this.descricao = descricao;
     }
 
     public Integer getId() {
