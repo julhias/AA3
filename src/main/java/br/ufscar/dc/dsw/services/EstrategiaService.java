@@ -40,7 +40,6 @@ public class EstrategiaService {
         if (estrategia == null) {
             throw new IllegalArgumentException("ID de estratégia inválido:" + id);
         }
-        // Regra de negócio: não permitir exclusão se a estratégia estiver em uso
         if (sessaoRepository.existsByEstrategia(estrategia)) {
             throw new RuntimeException("Não é possível excluir a estratégia, pois ela está associada a uma ou mais sessões de teste.");
         }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout-public}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <title th:text="#{testador.mySessions.title}">Minhas Sessões de Teste</title>
+</head>
+<body>
+<section layout:fragment="corpo">
+    <div class="container">
+        <div th:replace="~{fragments/alert}"></div> <h2 th:text="#{testador.mySessions.header}">Minhas Sessões de Teste</h2>
+        <p th:text="#{testador.mySessions.description}">Aqui estão todas as sessões de teste que você criou ou participou.</p>
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th th:text="#{sessao.table.title}">Título</th>
+                <th th:text="#{sessao.table.status}">Status</th>
+                <th th:text="#{sessao.table.creationDate}">Data de Criação</th>
+                <th th:text="#{sessao.table.actions}">Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sessao : ${sessoes}">
+                <td th:text="${sessao.titulo}"></td>
+                <td>
+                    <span class="badge" th:classappend="${sessao.status.name() == 'CRIADA' ? 'badge-primary' : (sessao.status.name() == 'EM_ANDAMENTO' ? 'badge-success' : 'badge-secondary')}" th:text="${sessao.status.name()}"></span>
+                </td>
+                <td th:text="${#temporals.format(sessao.criadoEm, 'dd/MM/yyyy HH:mm')}"></td>
+
+                <td>
+                    <a th:href="@{/sessoes/{id}(id=${sessao.id})}" class="btn btn-info btn-sm" th:text="#{sessao.details.button}">Detalhes</a>
+
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(sessoes)}">
+                <td colspan="4" th:text="#{testador.mySessions.noSessions}">Nenhuma sessão de teste encontrada.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head><title>Nova Sessão</title></head>
+<body>
+<section layout:fragment="corpo">
+    <div class="container">
+        <h2>Nova Sessão para: <span th:text="${sessao.projeto.nome}"></span></h2>
+        <form th:action="@{/sessoes/salvar}" th:object="${sessao}" method="post">
+            <input type="hidden" th:field="*{projeto}" />
+
+            <div class="form-group">
+                <label for="titulo">Título da Sessão</label>
+                <input type="text" class="form-control" th:field="*{titulo}" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="estrategia">Estratégia</label>
+                <select class="form-control" th:field="*{estrategia}" required>
+                    <option value="">Selecione uma estratégia...</option>
+                    <option th:each="est : ${estrategias}" th:value="${est.id}" th:text="${est.nome}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tempoDefinido">Tempo da Sessão (minutos)</label>
+                <input type="number" class="form-control" th:field="*{tempoDefinido}" required min="1"/>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição/Objetivos da Sessão</label>
+                <textarea class="form-control" th:field="*{descricao}" rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Criar Sessão</button>
+        </form>
+    </div>
+</section>
+</body>
+</html>
