@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8"/>
     <title th:text="#{app.title.home}">Página Inicial</title>
+
+
+
 </head>
 <body>
+
 <section layout:fragment="corpo">
     <div class="container text-center d-flex flex-column justify-content-center" style="min-height: calc(100vh - 120px);">
-        <h2 th:text="#{home.welcome.generic}">Bem-vindo(a) ao Sistema!</h2>
-        <p th:text="#{home.description.public}">Descubra as estratégias de teste exploratório disponíveis.</p>
+        <h2 th:text="#{home.welcome.generic}">G-Tes - Gerenciador de Testes para Jogos Digitais</h2>
+        <h5 th:text="#{home.description.public}">Este site tem como objetivo ajudar testadores de jogos digitais a organizar seus testes exploratórios, permitindo a criação e o gerenciamento de projetos, estratégias e sessões de teste.</h5>
+
+        <p th:text="#{public.info.link1}">Para ver as estratégias criadas, clique no link abaixo:</p>
 
         <a th:href="@{/public/estrategias}" class="btn btn-primary btn-lg mt-4" style="max-width: 300px; margin: 0 auto;" th:text="#{home.strategies.button}">Ver Estratégias</a>
     </div>
