@@ -10,6 +10,16 @@
   <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
+
+<div style="position: fixed; top: 80px; right: 20px; z-index: 1050;">
+  <a th:href="@{''(lang=pt_BR)}">
+    <img alt="Português" th:src="@{/img/Brasil.gif}" style="width: 50px; margin-bottom: 5px;" />
+  </a>
+  <a th:href="@{''(lang=en_US)}">
+    <img alt="English" th:src="@{/img/EUA.gif}" style="width: 50px;" />
+  </a>
+</div>
+      
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" th:href="@{/}">GTest</a>
