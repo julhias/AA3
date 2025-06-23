@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+
+
 <head>
     <meta charset="UTF-8"/>
     <title th:text="#{admin.dashboard.title}">Painel do Administrador</title>
 </head>
 <body>
+<span th:text="${#locale}"></span>
 <section layout:fragment="corpo">
     <div class="container mt-4">
         <h2 th:text="#{admin.dashboard.header}">Painel do Administrador</h2>
