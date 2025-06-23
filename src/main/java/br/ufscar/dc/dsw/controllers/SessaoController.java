@@ -117,26 +117,45 @@ public class SessaoController {
     }
 
     // R8: Ação para adicionar um bug (versão correta com segurança)
-    @PostMapping("/sessoes/{id}/bugs")
-    public String adicionarBug(@PathVariable("id") Integer id, @Valid @ModelAttribute("novoBug") Bug bug, BindingResult result, RedirectAttributes attr) {
-        Sessao sessao = sessaoService.buscarPorId(id);
-        if (!isOwner(sessao)) {
-            attr.addFlashAttribute("falha", "Acesso negado: você não pode adicionar bugs nesta sessão.");
-            return "redirect:/sessoes/" + id;
-        }
+    @PostMapping("/sessoes/{sessaoId}/bugs")
+public String adicionarBug(@PathVariable("sessaoId") Integer sessaoId,
+                           @Valid @ModelAttribute("novoBug") Bug bug,
+                           BindingResult result,
+                           Model model,
+                           RedirectAttributes attr) {
 
-        if(result.hasErrors()){
-            attr.addFlashAttribute("falha", "Erro de validação ao adicionar bug.");
-            return "redirect:/sessoes/" + id;
-        }
-        try {
-            sessaoService.adicionarBug(id, bug);
-            attr.addFlashAttribute("sucesso", "Bug registrado com sucesso!");
-        } catch (Exception e) {
-            attr.addFlashAttribute("falha", e.getMessage());
-        }
-        return "redirect:/sessoes/" + id;
+    // Busca a sessão usando a variável de caminho correta
+    Sessao sessao = sessaoService.buscarPorId(sessaoId);
+
+    // Verificação de segurança para garantir que o usuário é o dono da sessão
+    if (!isOwner(sessao)) {
+        attr.addFlashAttribute("falha", "Acesso negado: você não pode adicionar bugs nesta sessão.");
+        // Usa a variável correta no redirecionamento
+        return "redirect:/sessoes/" + sessaoId;
     }
+
+    // Se o formulário tiver erros de validação
+    if (result.hasErrors()) {
+        // Re-popula o model com os dados necessários para a página de detalhes
+        model.addAttribute("sessao", sessao);
+        model.addAttribute("bugs", sessaoService.buscarBugsPorSessao(sessaoId));
+        
+        // Retorna para a página de detalhes para mostrar os erros (NÃO redireciona)
+        return "sessao/detalhes";
+    }
+
+    try {
+        // Passa o ID da sessão e o objeto bug para o serviço
+        sessaoService.adicionarBug(sessaoId, bug);
+        attr.addFlashAttribute("sucesso", "Bug registrado com sucesso!");
+    } catch (Exception e) {
+        attr.addFlashAttribute("falha", e.getMessage());
+    }
+
+    // Se tudo deu certo, redireciona para a página de detalhes da sessão
+    return "redirect:/sessoes/" + sessaoId;
+}
+
 
     // Endpoint para EXIBIR o formulário de edição para o Admin
     @GetMapping("/sessoes/editar/{id}")

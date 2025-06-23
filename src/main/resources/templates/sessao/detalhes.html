@@ -2,7 +2,9 @@
 <html layout:decorate="~{layout}" 
       xmlns:th="http://www.thymeleaf.org" 
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head><title>Detalhes da Sessão</title></head>
+<head>
+    <title>Detalhes da Sessão</title>
+</head>
 <body>
 <section layout:fragment="corpo">
     <div class="container">
@@ -10,19 +12,24 @@
 
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 th:text="${sessao.titulo}"></h4>
-                <span class="badge" th:classappend="${sessao.status.name() == 'CRIADA' ? 'badge-primary' : (sessao.status.name() == 'EM_ANDAMENTO' ? 'badge-success' : 'badge-secondary')}" th:text="${sessao.status.name()}"></span>
+                <h4 th:text="${sessao.titulo}">Título da Sessão</h4>
+                <span class="badge" 
+                      th:classappend="${sessao.status.name() == 'CRIADA' ? 'badge-primary' : (sessao.status.name() == 'EM_ANDAMENTO' ? 'badge-success' : 'badge-secondary')}" 
+                      th:text="${sessao.status.name()}">
+                    STATUS
+                </span>
             </div>
             <div class="card-body">
                 <p><strong>Testador:</strong> <span th:text="${sessao.testador.nome}"></span></p>
+                
                 <div th:if="${#authentication.name == sessao.testador.login}">
                     <div th:if="${sessao.status.name() == 'CRIADA'}">
-                        <form th:action="@{/sessoes/{id}/iniciar(id=${sessao.id})}" method="post">
+                        <form th:action="@{/sessoes/{sessaoId}/iniciar(sessaoId=${sessao.id})}" method="post">
                             <button type="submit" class="btn btn-success">Iniciar Sessão</button>
                         </form>
                     </div>
                     <div th:if="${sessao.status.name() == 'EM_ANDAMENTO'}">
-                        <form th:action="@{/sessoes/{id}/finalizar(id=${sessao.id})}" method="post">
+                        <form th:action="@{/sessoes/{sessaoId}/finalizar(sessaoId=${sessao.id})}" method="post">
                             <button type="submit" class="btn btn-danger">Finalizar Sessão</button>
                         </form>
                     </div>
@@ -37,14 +44,14 @@
             <div class="card-body">
                 <div th:if="${sessao.status.name() == 'EM_ANDAMENTO' and #authentication.name == sessao.testador.login}">
                     <h6>Registrar Novo Bug</h6>
-                    <form th:action="@{/sessoes/{id}/bugs(id=${sessao.id})}" th:object="${novoBug}" method="post" class="mb-4">
+                    <form th:action="@{/sessoes/{sessaoId}/bugs(sessaoId=${sessao.id})}" th:object="${novoBug}" method="post" class="mb-4">
                         <div class="form-group">
                             <label for="descricao">Descrição do Bug</label>
-                            <textarea th:field="*{descricao}" class="form-control" rows="3" required></textarea>
+                            <textarea id="descricao" th:field="*{descricao}" class="form-control" rows="3" required></textarea>
                         </div>
                         <div class="form-group">
                             <label for="severidade">Severidade</label>
-                            <select th:field="*{severidade}" class="form-control">
+                            <select id="severidade" th:field="*{severidade}" class="form-control" required>
                                 <option th:each="sev : ${T(br.ufscar.dc.dsw.model.enums.Severity).values()}" th:value="${sev}" th:text="${sev.name()}"></option>
                             </select>
                         </div>
@@ -53,8 +60,34 @@
                     <hr>
                 </div>
 
-                <table class="table table-sm">
-                    </table>
+                <div th:if="${#lists.isEmpty(bugs)}">
+                    <p>Nenhum bug foi registrado nesta sessão até o momento.</p>
+                </div>
+                <table class="table table-sm table-striped" th:unless="${#lists.isEmpty(bugs)}">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Descrição</th>
+                            <th>Severidade</th>
+                            <th>Registrado Em</th>
+                            <th sec:authorize="hasRole('ADMIN')">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="bug : ${bugs}">
+                            <td th:text="${bug.id}">1</td>
+                            <td th:text="${bug.descricao}">Descrição do bug...</td>
+                            <td th:text="${bug.severidade.name()}">ALTA</td>
+                            <td th:text="${#temporals.format(bug.timestamp, 'dd/MM/yyyy HH:mm')}">Data e Hora</td>
+                            <td sec:authorize="hasRole('ADMIN')">
+                                <a th:href="@{|/admin/bugs/excluir/${bug.id}|}" class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Tem certeza que deseja excluir este bug?');">
+                                   Excluir
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
