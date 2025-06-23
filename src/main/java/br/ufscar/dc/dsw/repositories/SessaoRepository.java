@@ -2,7 +2,8 @@ package br.ufscar.dc.dsw.repositories;
 
 import br.ufscar.dc.dsw.model.Sessao;
 import br.ufscar.dc.dsw.model.Usuario;
-import br.ufscar.dc.dsw.model.Estrategia; // Importar Estrategia
+import br.ufscar.dc.dsw.model.Estrategia;
+import br.ufscar.dc.dsw.model.enums.SessionStatus; // Added import for SessionStatus
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,6 @@ public interface SessaoRepository extends JpaRepository<Sessao, Integer> {
     List<Sessao> findByTestadorOrderByCriadoEmDesc(Usuario testador);
 
     boolean existsByEstrategia(Estrategia estrategia);
+
+    List<Sessao> findByStatus(SessionStatus status);
 }

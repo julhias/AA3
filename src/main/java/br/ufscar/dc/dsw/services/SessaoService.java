@@ -5,10 +5,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled; // Added import
 
 import br.ufscar.dc.dsw.model.Bug;
 import br.ufscar.dc.dsw.model.Sessao;
-import br.ufscar.dc.dsw.model.Usuario; // Adicione este import
+import br.ufscar.dc.dsw.model.Usuario;
 import br.ufscar.dc.dsw.model.enums.SessionStatus;
 import br.ufscar.dc.dsw.repositories.BugRepository;
 import br.ufscar.dc.dsw.repositories.SessaoRepository;
@@ -79,7 +80,7 @@ public class SessaoService {
             throw new IllegalStateException("Bugs só podem ser adicionados a sessões 'EM ANDAMENTO'.");
         }
         bug.setSessao(sessao);
-        bug.setTimestamp(LocalDateTime.now()); // Definir o timestamp do bug
+        bug.setTimestamp(LocalDateTime.now());
         bugRepository.save(bug);
     }
 
@@ -97,10 +98,9 @@ public class SessaoService {
         if (sessao.getStatus() == SessionStatus.EM_ANDAMENTO) {
             throw new IllegalStateException("Não é possível excluir uma sessão que está em andamento.");
         }
-        // Verificar se há bugs associados antes de excluir, ou se o DB tem cascade delete
         List<Bug> bugsDaSessao = bugRepository.findBySessaoIdOrderByTimestampDesc(id);
         if (!bugsDaSessao.isEmpty()) {
-            bugRepository.deleteAll(bugsDaSessao); // Exclui os bugs primeiro se não houver cascade
+            bugRepository.deleteAll(bugsDaSessao);
         }
         sessaoRepository.deleteById(id);
     }
@@ -108,5 +108,23 @@ public class SessaoService {
     @Transactional(readOnly = true)
     public List<Bug> buscarBugsPorSessao(Integer sessaoId) {
         return bugRepository.findBySessaoIdOrderByTimestampDesc(sessaoId);
+    }
+
+    // Novo método para finalizar sessões automaticamente
+    @Scheduled(fixedRate = 60000) // Executa a cada 1 minuto (60000 ms)
+    public void finalizarSessoesAutomaticamente() {
+        System.out.println("Verificando sessões para finalização automática...");
+        List<Sessao> sessoesEmAndamento = sessaoRepository.findByStatus(SessionStatus.EM_ANDAMENTO);
+        LocalDateTime agora = LocalDateTime.now();
+
+        for (Sessao sessao : sessoesEmAndamento) {
+            if (sessao.getInicioEm() != null && sessao.getTempoDefinido() != null) {
+                LocalDateTime tempoLimite = sessao.getInicioEm().plusMinutes(sessao.getTempoDefinido());
+                if (agora.isAfter(tempoLimite)) {
+                    System.out.println("Finalizando sessão " + sessao.getId() + " automaticamente. Tempo definido excedido.");
+                    finalizarSessao(sessao.getId());
+                }
+            }
+        }
     }
 }
