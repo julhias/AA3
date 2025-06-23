@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" 
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:text="'Sessões - ' + ${projeto.nome}"></title>
+</head>
+<body>
+<section layout:fragment="corpo">
+    <div class="container">
+        <div th:replace="~{fragments/alert}"></div>
+        <h2>Sessões de Teste do Projeto: <span th:text="${projeto.nome}"></span></h2>
+
+        <div sec:authorize="hasRole('TESTER')">
+            <a th:href="@{/projetos/{id}/sessoes/cadastrar(id=${projeto.id})}" class="btn btn-primary my-3">
+                Nova Sessão de Teste
+            </a>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Testador</th>
+                    <th>Status</th>
+                    <th>Data de Criação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="sessao : ${sessoes}">
+                    <td th:text="${sessao.titulo}"></td>
+                    <td th:text="${sessao.testador.nome}"></td>
+                    <td>
+                        <span class="badge" th:classappend="${sessao.status.name() == 'CRIADA' ? 'badge-primary' : (sessao.status.name() == 'EM_ANDAMENTO' ? 'badge-success' : 'badge-secondary')}" th:text="${sessao.status.name()}"></span>
+                    </td>
+                    <td th:text="${#temporals.format(sessao.criadoEm, 'dd/MM/yyyy HH:mm')}"></td>
+                    
+                    <td>
+                        <a th:href="@{/sessoes/{id}(id=${sessao.id})}" class="btn btn-info btn-sm">Detalhes</a>
+                        
+                        <span sec:authorize="hasRole('ADMIN')">
+                            <a th:href="@{/sessoes/editar/{id}(id=${sessao.id})}" class="btn btn-warning btn-sm">Editar</a>
+                            <a th:href="@{/sessoes/excluir/{id}(id=${sessao.id})}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Tem certeza que deseja excluir esta sessão?');">
+                               Excluir
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(sessoes)}">
+                    <td colspan="5">Nenhuma sessão de teste encontrada para este projeto.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

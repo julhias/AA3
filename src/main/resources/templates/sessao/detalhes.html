@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><title>Detalhes da Sessão</title></head>
+<body>
+<section layout:fragment="corpo">
+    <div class="container">
+        <div th:replace="~{fragments/alert}"></div>
+
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 th:text="${sessao.titulo}"></h4>
+                <span class="badge" th:classappend="${sessao.status.name() == 'CRIADA' ? 'badge-primary' : (sessao.status.name() == 'EM_ANDAMENTO' ? 'badge-success' : 'badge-secondary')}" th:text="${sessao.status.name()}"></span>
+            </div>
+            <div class="card-body">
+                <p><strong>Testador:</strong> <span th:text="${sessao.testador.nome}"></span></p>
+                <div th:if="${#authentication.name == sessao.testador.login}">
+                    <div th:if="${sessao.status.name() == 'CRIADA'}">
+                        <form th:action="@{/sessoes/{id}/iniciar(id=${sessao.id})}" method="post">
+                            <button type="submit" class="btn btn-success">Iniciar Sessão</button>
+                        </form>
+                    </div>
+                    <div th:if="${sessao.status.name() == 'EM_ANDAMENTO'}">
+                        <form th:action="@{/sessoes/{id}/finalizar(id=${sessao.id})}" method="post">
+                            <button type="submit" class="btn btn-danger">Finalizar Sessão</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>Bugs Registrados</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${sessao.status.name() == 'EM_ANDAMENTO' and #authentication.name == sessao.testador.login}">
+                    <h6>Registrar Novo Bug</h6>
+                    <form th:action="@{/sessoes/{id}/bugs(id=${sessao.id})}" th:object="${novoBug}" method="post" class="mb-4">
+                        <div class="form-group">
+                            <label for="descricao">Descrição do Bug</label>
+                            <textarea th:field="*{descricao}" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="severidade">Severidade</label>
+                            <select th:field="*{severidade}" class="form-control">
+                                <option th:each="sev : ${T(br.ufscar.dc.dsw.model.enums.Severity).values()}" th:value="${sev}" th:text="${sev.name()}"></option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning">Registrar Bug</button>
+                    </form>
+                    <hr>
+                </div>
+
+                <table class="table table-sm">
+                    </table>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
