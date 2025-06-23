@@ -61,10 +61,9 @@ public class Usuario {
     )
     private Role tipo;
 
-    // NEW FIELD FOR PROJECTS
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "projeto_usuario", // This is the join table name
+            name = "projeto_usuario",
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "projeto_id")
     )
@@ -120,7 +119,6 @@ public class Usuario {
         this.tipo = tipo;
     }
 
-    // NEW GETTER AND SETTER FOR PROJETOS
     public List<Projeto> getProjetos() {
         return projetos;
     }
