@@ -190,7 +190,6 @@ public String adicionarBug(@PathVariable("sessaoId") Integer sessaoId,
         return "redirect:/projetos/" + projetoId + "/sessoes";
     }
 
-    // Método privado para verificar se o usuário logado é o "dono" da sessão
     private boolean isOwner(Sessao sessao) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails)principal).getUsername();
