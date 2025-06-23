@@ -1,7 +1,13 @@
-package br.ufscar.dc.dsw.controllers; // Ou o pacote apropriado
+package br.ufscar.dc.dsw.controllers;
 
+import br.ufscar.dc.dsw.model.Usuario;
 import br.ufscar.dc.dsw.repositories.EstrategiaRepository;
+import br.ufscar.dc.dsw.repositories.UsuarioRepository;
+import br.ufscar.dc.dsw.services.EstrategiaService;
+import br.ufscar.dc.dsw.services.ProjetoService;
+import br.ufscar.dc.dsw.services.SessaoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +19,12 @@ public class TesterController {
 
     @Autowired
     private EstrategiaRepository estrategiaRepository;
+    @Autowired
+    private SessaoService sessaoService;
+    @Autowired
+    private ProjetoService projetoService;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @GetMapping("/home")
     public String homeTestador() {
@@ -26,12 +38,16 @@ public class TesterController {
     }
 
     @GetMapping("/minhas-sessoes")
-    public String minhasSessoes() {
-        return "testador/minhas-sessoes";
+    public String minhasSessoes(Model model) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario testador = usuarioRepository.findByLogin(username).orElseThrow(() -> new RuntimeException("Testador não encontrado."));
+        model.addAttribute("sessoes", sessaoService.buscarPorTestador(testador));
+        return "sessao/lista";
     }
 
     @GetMapping("/criar-sessao")
-    public String criarSessao() {
-        return "testador/criar-sessao";
+    public String criarSessao(Model model) {
+        model.addAttribute("projetos", projetoService.buscarTodos());
+        return "tester/escolher-projeto";
     }
 }

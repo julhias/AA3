@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html layout:decorate="~{layout-public}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="#{testador.chooseProject.title}">Escolher Projeto</title>
+</head>
+<body>
+<section layout:fragment="corpo">
+    <div class="container mt-4">
+        <h2 th:text="#{testador.chooseProject.header}">Criar Sessão: Selecione um Projeto</h2>
+        <p th:text="#{testador.chooseProject.description}">Para criar uma nova sessão, por favor, selecione o projeto ao qual ela pertencerá.</p>
+        <hr/>
+
+        <div class="list-group">
+            <a th:each="projeto : ${projetos}" th:href="@{/projetos/{id}/sessoes/cadastrar(id=${projeto.id})}" class="list-group-item list-group-item-action">
+                <h5 class="mb-1" th:text="${projeto.nome}">Nome do Projeto</h5>
+                <small th:text="${projeto.descricao}">Descrição do Projeto</small>
+            </a>
+            <p th:if="${#lists.isEmpty(projetos)}" th:text="#{testador.chooseProject.noProjects}">Nenhum projeto disponível para criar sessões.</p>
+        </div>
+    </div>
+</section>
+</body>
+</html>
