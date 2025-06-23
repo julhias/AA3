@@ -50,4 +50,12 @@ public class TesterController {
         model.addAttribute("projetos", projetoService.buscarTodos());
         return "tester/escolher-projeto";
     }
+
+    @GetMapping("/meus-projetos")
+    public String meusProjetos(Model model) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario testador = usuarioRepository.findByLogin(username).orElseThrow(() -> new RuntimeException("Testador não encontrado."));
+        model.addAttribute("projetos", testador.getProjetos()); // Assuming Usuario has getProjetos()
+        return "tester/meus_projetos";
+    }
 }

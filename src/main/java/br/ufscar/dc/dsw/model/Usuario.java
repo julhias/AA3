@@ -3,6 +3,9 @@ package br.ufscar.dc.dsw.model;
 import br.ufscar.dc.dsw.model.enums.Role;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static jakarta.persistence.GenerationType.SEQUENCE;
 
 @Entity(name = "Usuario")
@@ -58,6 +61,15 @@ public class Usuario {
     )
     private Role tipo;
 
+    // NEW FIELD FOR PROJECTS
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "projeto_usuario", // This is the join table name
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "projeto_id")
+    )
+    private List<Projeto> projetos = new ArrayList<>();
+
     public Usuario() {
     }
 
@@ -106,6 +118,22 @@ public class Usuario {
 
     public void setTipo(Role tipo) {
         this.tipo = tipo;
+    }
+
+    // NEW GETTER AND SETTER FOR PROJETOS
+    public List<Projeto> getProjetos() {
+        return projetos;
+    }
+
+    public void setProjetos(List<Projeto> projetos) {
+        this.projetos = projetos;
+    }
+
+    public void adicionarProjeto(Projeto projeto) {
+        if (this.projetos == null) {
+            this.projetos = new ArrayList<>();
+        }
+        this.projetos.add(projeto);
     }
 
     @Override
