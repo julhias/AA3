@@ -55,7 +55,7 @@ public class TesterController {
     public String meusProjetos(Model model) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario testador = usuarioRepository.findByLogin(username).orElseThrow(() -> new RuntimeException("Testador não encontrado."));
-        model.addAttribute("projetos", testador.getProjetos()); // Assuming Usuario has getProjetos()
+        model.addAttribute("projetos", testador.getProjetos());
         return "tester/meus_projetos";
     }
 }

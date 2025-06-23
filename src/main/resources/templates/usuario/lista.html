@@ -49,11 +49,11 @@
           <td th:text="${usuario.tipo.name()}">Perfil</td>
           <td colspan="2">
             <a class="btn btn-info btn-sm" th:href="@{/usuarios/editar/{id}(id=${usuario.id})}" role="button">
-              <span class="oi oi-brush" title="Editar" aria-hidden="true"></span>
+                <span th:text="#{button.edit.label}"></span>
             </a>
             <a class="btn btn-danger btn-sm" th:href="@{/usuarios/excluir/{id}(id=${usuario.id})}" role="button"
                onclick="return confirm('Tem certeza que deseja excluir este usuário?')">
-              <span class="oi oi-circle-x" title="Excluir" aria-hidden="true"></span>
+                <span th:text="#{button.delete.label}"></span>
             </a>
           </td>
         </tr>
