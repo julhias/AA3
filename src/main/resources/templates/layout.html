@@ -16,27 +16,27 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/home}">Painel Admin</a>
+                    <a class="nav-link" th:href="@{/admin/home}" th:text="#{admin.dashboard.title}">Painel Admin</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/projetos/listar}">Projetos</a>
+                    <a class="nav-link" th:href="@{/admin/projetos/listar}" th:text="#{projeto.list.admin.label}">Projetos</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/usuarios/listar}">Gerenciar Usuários</a>
+                    <a class="nav-link" th:href="@{/usuarios/listar}" th:text="#{admin.card.manageUsers.button}">Gerenciar Usuários</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:href="@{/admin/estrategias/listar}">Gerenciar Estratégias</a>
+                    <a class="nav-link" th:href="@{/admin/estrategias/listar}" th:text="#{admin.card.manageStrategies.button}">Gerenciar Estratégias</a>
                 </li>
 
 
                 <li class="nav-item" sec:authorize="hasRole('TESTER')">
-                    <a class="nav-link" th:href="@{/testador/home}">Dashboard Testador</a>
+                    <a class="nav-link" th:href="@{/testador/home}" th:text="#{nav.testador.home}">Dashboard Testador</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('TESTER')">
-                    <a class="nav-link" th:href="@{/testador/minhas-sessoes}">Minhas Sessões</a>
+                    <a class="nav-link" th:href="@{/testador/minhas-sessoes}" th:text="#{nav.testador.minhas.sessoes}">Minhas Sessões</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('TESTER')">
-                    <a class="nav-link" th:href="@{/testador/criar-sessao}">Criar Sessão</a>
+                    <a class="nav-link" th:href="@{/testador/criar-sessao}" th:text="#{nav.testador.criar.sessao}">Criar Sessão</a>
                 </li>
 
                 <li class="nav-item" sec:authorize="isAuthenticated()">
