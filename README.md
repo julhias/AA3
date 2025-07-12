@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Sistema de Apoio a Testes Exploratórios em Video Games
 
@@ -42,3 +43,6 @@ O sistema segue a arquitetura Modelo-Visão-Controlador (MVC), utilizando as seg
 * HTML
 * CSS
 * JavaScript
+=======
+# AA3
+>>>>>>> 3c0f51bd3248202126f694b4ad1bc02b4ff8d9d9
