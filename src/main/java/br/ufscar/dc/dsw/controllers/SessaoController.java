@@ -1,198 +1,79 @@
 package br.ufscar.dc.dsw.controllers;
 
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import br.ufscar.dc.dsw.dto.BugDTO;
+import br.ufscar.dc.dsw.dto.SessaoCreateDTO;
+import br.ufscar.dc.dsw.dto.SessaoDTO;
+import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Bug;
-import br.ufscar.dc.dsw.model.Projeto;
 import br.ufscar.dc.dsw.model.Sessao;
 import br.ufscar.dc.dsw.model.Usuario;
-import br.ufscar.dc.dsw.repositories.UsuarioRepository;
-import br.ufscar.dc.dsw.services.EstrategiaService;
-import br.ufscar.dc.dsw.services.ProjetoService;
 import br.ufscar.dc.dsw.services.SessaoService;
+import br.ufscar.dc.dsw.services.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@Controller
+@RestController
+@RequestMapping("/api/sessoes")
 public class SessaoController {
 
-    private final SessaoService sessaoService;
-    private final ProjetoService projetoService;
-    private final EstrategiaService estrategiaService;
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private SessaoService sessaoService;
+    @Autowired
+    private UsuarioService usuarioService;
+    @Autowired
+    private EntityMapper mapper;
 
-    public SessaoController(SessaoService sessaoService, ProjetoService projetoService, EstrategiaService estrategiaService, UsuarioRepository usuarioRepository) {
-        this.sessaoService = sessaoService;
-        this.projetoService = projetoService;
-        this.estrategiaService = estrategiaService;
-        this.usuarioRepository = usuarioRepository;
-    }
-
-    // R9: Listagem de sessões de um projeto
-    @GetMapping("/projetos/{projetoId}/sessoes")
-    public String listarSessoes(@PathVariable("projetoId") Integer projetoId, Model model) {
-        model.addAttribute("projeto", projetoService.buscarPorId(projetoId));
-        model.addAttribute("sessoes", sessaoService.buscarPorProjeto(projetoId));
-        return "sessao/lista";
-    }
-
-    // R7: Exibir formulário de cadastro de sessão
-    @GetMapping("/projetos/{projetoId}/sessoes/cadastrar")
-    public String exibirFormularioCadastro(@PathVariable("projetoId") Integer projetoId, Model model) {
-        Projeto projeto = projetoService.buscarPorId(projetoId);
-        Sessao sessao = new Sessao();
-        sessao.setProjeto(projeto);
-        model.addAttribute("sessao", sessao);
-        model.addAttribute("estrategias", estrategiaService.buscarTodas());
-        return "sessao/cadastro";
-    }
-
-    // R7: Salvar nova sessão
-    @PostMapping("/sessoes/salvar")
-    public String salvarSessao(@Valid @ModelAttribute("sessao") Sessao sessao, BindingResult result, RedirectAttributes attr) {
-        if (result.hasErrors()) {
-            attr.addFlashAttribute("estrategias", estrategiaService.buscarTodas());
-            return "sessao/cadastro";
-        }
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Usuario testador = usuarioRepository.findByLogin(username).orElseThrow();
-        sessao.setTestador(testador);
-        sessaoService.salvar(sessao);
-        attr.addFlashAttribute("sucesso", "Sessão criada com sucesso!");
-        return "redirect:/projetos/" + sessao.getProjeto().getId() + "/sessoes";
-    }
-
-    // R8: Detalhes da sessão (ponto central do ciclo de vida)
-    @GetMapping("/sessoes/{id}")
-    public String detalharSessao(@PathVariable("id") Integer id, Model model) {
+    @GetMapping("/{id}")
+    public ResponseEntity<SessaoDTO> buscarSessao(@PathVariable Integer id) {
         Sessao sessao = sessaoService.buscarPorId(id);
-        model.addAttribute("sessao", sessao);
-        model.addAttribute("bugs", sessaoService.buscarBugsPorSessao(id));
-        model.addAttribute("novoBug", new Bug()); 
-        return "sessao/detalhes";
-    }
-    
-    // R8: Ação para iniciar a sessão (versão correta com segurança)
-    @PostMapping("/sessoes/{id}/iniciar")
-    public String iniciarSessao(@PathVariable("id") Integer id, RedirectAttributes attr) {
-        Sessao sessao = sessaoService.buscarPorId(id);
-        if (!isOwner(sessao)) {
-            attr.addFlashAttribute("falha", "Acesso negado: você não é o dono desta sessão.");
-            return "redirect:/sessoes/" + id;
-        }
-        
-        try {
-            sessaoService.iniciarSessao(id);
-            attr.addFlashAttribute("sucesso", "Sessão iniciada!");
-        } catch (Exception e) {
-            attr.addFlashAttribute("falha", e.getMessage());
-        }
-        return "redirect:/sessoes/" + id;
+        // A segurança (verificar se o usuário pode ver esta sessão) pode ser
+        // adicionada no service ou com anotações de segurança.
+        return ResponseEntity.ok(mapper.toDTO(sessao));
     }
 
-    // R8: Ação para finalizar a sessão (versão correta com segurança)
-    @PostMapping("/sessoes/{id}/finalizar")
-    public String finalizarSessao(@PathVariable("id") Integer id, RedirectAttributes attr) {
-        Sessao sessao = sessaoService.buscarPorId(id);
-        if (!isOwner(sessao)) {
-            attr.addFlashAttribute("falha", "Acesso negado: você não é o dono desta sessão.");
-            return "redirect:/sessoes/" + id;
-        }
-        
-        try {
-            sessaoService.finalizarSessao(id);
-            attr.addFlashAttribute("sucesso", "Sessão finalizada com sucesso.");
-        } catch (Exception e) {
-            attr.addFlashAttribute("falha", e.getMessage());
-        }
-        return "redirect:/sessoes/" + id;
+    @PostMapping
+    public ResponseEntity<SessaoDTO> criarSessao(@Valid @RequestBody SessaoCreateDTO dto, @AuthenticationPrincipal UserDetails userDetails) {
+        Usuario testador = usuarioService.buscarPorLogin(userDetails.getUsername());
+        Sessao novaSessao = sessaoService.criarSessao(dto, testador);
+
+        URI location = URI.create(String.format("/api/sessoes/%d", novaSessao.getId()));
+        return ResponseEntity.created(location).body(mapper.toDTO(novaSessao));
     }
 
-    // R8: Ação para adicionar um bug (versão correta com segurança)
-    @PostMapping("/sessoes/{sessaoId}/bugs")
-public String adicionarBug(@PathVariable("sessaoId") Integer sessaoId,
-                           @Valid @ModelAttribute("novoBug") Bug bug,
-                           BindingResult result,
-                           Model model,
-                           RedirectAttributes attr) {
-
-    // Busca a sessão usando a variável de caminho correta
-    Sessao sessao = sessaoService.buscarPorId(sessaoId);
-
-    // Verificação de segurança para garantir que o usuário é o dono da sessão
-    if (!isOwner(sessao)) {
-        attr.addFlashAttribute("falha", "Acesso negado: você não pode adicionar bugs nesta sessão.");
-        // Usa a variável correta no redirecionamento
-        return "redirect:/sessoes/" + sessaoId;
+    @PostMapping("/{id}/iniciar")
+    public ResponseEntity<Void> iniciarSessao(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {
+        sessaoService.iniciarSessao(id, userDetails.getUsername());
+        return ResponseEntity.ok().build();
     }
 
-    // Se o formulário tiver erros de validação
-    if (result.hasErrors()) {
-        // Re-popula o model com os dados necessários para a página de detalhes
-        model.addAttribute("sessao", sessao);
-        model.addAttribute("bugs", sessaoService.buscarBugsPorSessao(sessaoId));
-        
-        // Retorna para a página de detalhes para mostrar os erros (NÃO redireciona)
-        return "sessao/detalhes";
+    @PostMapping("/{id}/finalizar")
+    public ResponseEntity<Void> finalizarSessao(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {
+        sessaoService.finalizarSessao(id, userDetails.getUsername());
+        return ResponseEntity.ok().build();
     }
 
-    try {
-        // Passa o ID da sessão e o objeto bug para o serviço
-        sessaoService.adicionarBug(sessaoId, bug);
-        attr.addFlashAttribute("sucesso", "Bug registrado com sucesso!");
-    } catch (Exception e) {
-        attr.addFlashAttribute("falha", e.getMessage());
+    @GetMapping("/{sessaoId}/bugs")
+    public ResponseEntity<List<BugDTO>> listarBugsDaSessao(@PathVariable Integer sessaoId) {
+        List<BugDTO> dtos = sessaoService.buscarBugsPorSessao(sessaoId)
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    // Se tudo deu certo, redireciona para a página de detalhes da sessão
-    return "redirect:/sessoes/" + sessaoId;
-}
+    @PostMapping("/{sessaoId}/bugs")
+    public ResponseEntity<BugDTO> adicionarBug(@PathVariable Integer sessaoId, @Valid @RequestBody BugDTO bugDto, @AuthenticationPrincipal UserDetails userDetails) {
+        Bug novoBug = sessaoService.adicionarBug(sessaoId, bugDto, userDetails.getUsername());
+        BugDTO novoBugDto = mapper.toDTO(novoBug);
 
-
-    // Endpoint para EXIBIR o formulário de edição para o Admin
-    @GetMapping("/sessoes/editar/{id}")
-    public String exibirFormularioEdicao(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("sessao", sessaoService.buscarPorId(id));
-        model.addAttribute("estrategias", estrategiaService.buscarTodas());
-        return "sessao/edicao";
-    }
-
-    // Endpoint para PROCESSAR a edição enviada pelo Admin
-    @PostMapping("/sessoes/editar")
-    public String editarSessao(@Valid @ModelAttribute("sessao") Sessao sessao, BindingResult result, RedirectAttributes attr) {
-        if (result.hasErrors()) {
-            return "sessao/edicao";
-        }
-        sessaoService.editar(sessao);
-        attr.addFlashAttribute("sucesso", "Sessão editada com sucesso!");
-        return "redirect:/projetos/" + sessao.getProjeto().getId() + "/sessoes";
-    }
-
-    // Endpoint para EXCLUIR uma sessão
-    @GetMapping("/sessoes/excluir/{id}")
-    public String excluirSessao(@PathVariable("id") Integer id, RedirectAttributes attr) {
-        Sessao sessao = sessaoService.buscarPorId(id);
-        Integer projetoId = sessao.getProjeto().getId();
-        try {
-            sessaoService.excluir(id);
-            attr.addFlashAttribute("sucesso", "Sessão excluída com sucesso.");
-        } catch (Exception e) {
-            attr.addFlashAttribute("falha", e.getMessage());
-        }
-        return "redirect:/projetos/" + projetoId + "/sessoes";
-    }
-
-    private boolean isOwner(Sessao sessao) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = ((UserDetails)principal).getUsername();
-        return sessao.getTestador().getLogin().equals(username);
+        URI location = URI.create(String.format("/api/sessoes/%d/bugs/%d", sessaoId, novoBugDto.getId()));
+        return ResponseEntity.created(location).body(novoBugDto);
     }
 }

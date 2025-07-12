@@ -1,69 +1,78 @@
 package br.ufscar.dc.dsw.controllers;
 
+import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.ufscar.dc.dsw.dto.EstrategiaDTO;
+import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Estrategia;
 import br.ufscar.dc.dsw.services.EstrategiaService;
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@Controller
-@RequestMapping("/admin/estrategias")
+@RestController
+@RequestMapping("/api/admin/estrategias")
 public class EstrategiaAdminController {
 
-    private final EstrategiaService estrategiaService;
+    @Autowired
+    private EstrategiaService service;
 
-    public EstrategiaAdminController(EstrategiaService estrategiaService) {
-        this.estrategiaService = estrategiaService;
+    @Autowired
+    private EntityMapper mapper;
+
+    @GetMapping
+    public ResponseEntity<List<EstrategiaDTO>> listarTodos() {
+        // 1. O service retorna uma lista de Entidades
+        List<Estrategia> estrategias = service.buscarTodos();
+        // 2. O controller mapeia a lista de Entidades para uma lista de DTOs
+        List<EstrategiaDTO> dtos = estrategias.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/listar")
-    public String listar(Model model) {
-        model.addAttribute("estrategias", estrategiaService.buscarTodas());
-        return "admin/estrategia/lista";
+    @GetMapping("/{id}")
+    public ResponseEntity<EstrategiaDTO> buscarPorId(@PathVariable Integer id) {
+        Estrategia estrategia = service.buscarPorId(id);
+        return ResponseEntity.ok(mapper.toDTO(estrategia));
     }
 
-    @GetMapping("/cadastrar")
-    public String cadastrar(Model model) {
-        model.addAttribute("estrategia", new Estrategia());
-        return "admin/estrategia/cadastro";
+    @PostMapping
+    public ResponseEntity<EstrategiaDTO> criar(@Valid @RequestBody EstrategiaDTO dto) {
+        // 1. O controller mapeia o DTO recebido para uma Entidade
+        Estrategia estrategia = mapper.toEntity(dto);
+        // 2. O service recebe e salva a Entidade
+        Estrategia estrategiaSalva = service.salvar(estrategia);
+
+        URI location = URI.create(String.format("/api/admin/estrategias/%d", estrategiaSalva.getId()));
+        return ResponseEntity.created(location).body(mapper.toDTO(estrategiaSalva));
     }
 
-    @PostMapping("/salvar")
-    public String salvar(@Valid @ModelAttribute("estrategia") Estrategia estrategia, BindingResult result, RedirectAttributes attr) {
-        if (result.hasErrors()) {
-            return "admin/estrategia/cadastro";
-        }
-        try {
-            estrategiaService.salvar(estrategia);
-            attr.addFlashAttribute("sucesso", "estrategia.save.success");
-        } catch (Exception e) {
-            attr.addFlashAttribute("falha", "estrategia.save.fail");
-        }
-        return "redirect:/admin/estrategias/listar";
+    @PutMapping("/{id}")
+    public ResponseEntity<EstrategiaDTO> atualizar(@PathVariable Integer id, @Valid @RequestBody EstrategiaDTO dto) {
+        // 1. O controller mapeia o DTO recebido para uma Entidade com os novos dados
+        Estrategia dadosParaAtualizar = mapper.toEntity(dto);
+        // 2. O service recebe o ID e a Entidade com os dados para atualizar
+        Estrategia estrategiaAtualizada = service.atualizar(id, dadosParaAtualizar);
+
+        return ResponseEntity.ok(mapper.toDTO(estrategiaAtualizada));
     }
 
-    @GetMapping("/editar/{id}")
-    public String preEditar(@PathVariable("id") Integer id, Model model, RedirectAttributes attr) {
-        Estrategia estrategia = estrategiaService.buscarPorId(id);
-        if (estrategia == null) {
-            attr.addFlashAttribute("falha", "estrategia.not.found");
-            return "redirect:/admin/estrategias/listar";
-        }
-        model.addAttribute("estrategia", estrategia);
-        return "admin/estrategia/cadastro";
-    }
-
-    @GetMapping("/excluir/{id}")
-    public String excluir(@PathVariable("id") Integer id, RedirectAttributes attr) {
-        try {
-            estrategiaService.excluir(id);
-            attr.addFlashAttribute("sucesso", "estrategia.delete.success");
-        } catch (Exception e) {
-            attr.addFlashAttribute("falha", e.getMessage()); // Exibe a mensagem de erro específica
-        }
-        return "redirect:/admin/estrategias/listar";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Integer id) {
+        service.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 }
+

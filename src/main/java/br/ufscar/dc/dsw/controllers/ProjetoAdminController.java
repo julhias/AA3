@@ -1,99 +1,66 @@
 package br.ufscar.dc.dsw.controllers;
 
+import br.ufscar.dc.dsw.dto.ProjetoDTO;
+import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Projeto;
-import br.ufscar.dc.dsw.model.Usuario;
 import br.ufscar.dc.dsw.services.ProjetoService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Controller
-@RequestMapping("/admin/projetos")
+@RestController
+@RequestMapping("/api/admin/projetos")
 public class ProjetoAdminController {
 
-    private final ProjetoService projetoService;
+    @Autowired
+    private ProjetoService service;
 
-    public ProjetoAdminController(ProjetoService projetoService) {
-        this.projetoService = projetoService;
-    }
+    @Autowired
+    private EntityMapper mapper;
 
-    private void addCommonAttributes(Model model, Projeto projeto) {
-        model.addAttribute("projeto", projeto);
-        List<Usuario> testadores = projetoService.buscarTodosTestadores();
-        model.addAttribute("testadores", testadores);
-        List<Long> assignedTesterIds = projeto.getUsuarios().stream()
-                .map(Usuario::getId)
+    @GetMapping
+    public ResponseEntity<List<ProjetoDTO>> listar(@RequestParam(value = "sortBy", required = false, defaultValue = "nome") String sortBy) {
+        List<ProjetoDTO> dtos = service.buscarTodos(sortBy)
+                .stream()
+                .map(mapper::toDTO)
                 .collect(Collectors.toList());
-        model.addAttribute("assignedTesterIds", assignedTesterIds);
+        return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/listar")
-    public String listar(@RequestParam(value = "sortBy", required = false, defaultValue = "nome") String sortBy, Model model) {
-        model.addAttribute("projetos", projetoService.buscarTodos(sortBy));
-        model.addAttribute("currentSortBy", sortBy);
-        return "admin/projeto/lista";
+    @GetMapping("/{id}")
+    public ResponseEntity<ProjetoDTO> buscarPorId(@PathVariable Integer id) {
+        Projeto projeto = service.buscarPorId(id);
+        return ResponseEntity.ok(mapper.toDTO(projeto));
     }
 
-    @GetMapping("/cadastrar")
-    public String cadastrar(Model model) {
-        addCommonAttributes(model, new Projeto());
-        return "admin/projeto/cadastro";
+    @PostMapping
+    public ResponseEntity<ProjetoDTO> criar(@Valid @RequestBody ProjetoDTO dto) {
+        Projeto projeto = mapper.toEntity(dto);
+        // A lógica de negócio para associar os testadores está no service
+        Projeto projetoSalvo = service.salvar(projeto, dto.getTestadoresIds());
+
+        URI location = URI.create(String.format("/api/admin/projetos/%d", projetoSalvo.getId()));
+        return ResponseEntity.created(location).body(mapper.toDTO(projetoSalvo));
     }
 
-    @PostMapping("/salvar")
-    public String salvar(@Valid @ModelAttribute("projeto") Projeto projeto, BindingResult result,
-                         @RequestParam(value = "selectedTesters", required = false) List<Long> selectedTesterIds,
-                         RedirectAttributes attr) {
+    @PutMapping("/{id}")
+    public ResponseEntity<ProjetoDTO> atualizar(@PathVariable Integer id, @Valid @RequestBody ProjetoDTO dto) {
+        Projeto projetoExistente = service.buscarPorId(id);
+        projetoExistente.setNome(dto.getNome());
+        projetoExistente.setDescricao(dto.getDescricao());
 
-        if (result.hasErrors()) {
-            addCommonAttributes(attr, projeto);
-            return "admin/projeto/cadastro";
-        }
-
-        try {
-            if (selectedTesterIds != null && !selectedTesterIds.isEmpty()) {
-                List<Usuario> selectedUsers = selectedTesterIds.stream()
-                        .map(id -> projetoService.buscarUsuarioPorId(id)) // CHANGED: Use the new public method
-                        .filter(java.util.Objects::nonNull)
-                        .collect(Collectors.toList());
-                projeto.setUsuarios(selectedUsers);
-            } else {
-                projeto.setUsuarios(new java.util.ArrayList<>());
-            }
-
-            projetoService.salvar(projeto);
-            attr.addFlashAttribute("sucesso", "projeto.save.success");
-        } catch (Exception e) {
-            attr.addFlashAttribute("falha", "projeto.save.fail");
-        }
-        return "redirect:/admin/projetos/listar";
+        Projeto projetoAtualizado = service.salvar(projetoExistente, dto.getTestadoresIds());
+        return ResponseEntity.ok(mapper.toDTO(projetoAtualizado));
     }
 
-    @GetMapping("/editar/{id}")
-    public String preEditar(@PathVariable("id") Integer id, Model model, RedirectAttributes attr) {
-        Projeto projeto = projetoService.buscarPorId(id);
-        if (projeto == null) {
-            attr.addFlashAttribute("falha", "projeto.not.found");
-            return "redirect:/admin/projetos/listar";
-        }
-        addCommonAttributes(model, projeto);
-        return "admin/projeto/cadastro";
-    }
-
-    @GetMapping("/excluir/{id}")
-    public String excluir(@PathVariable("id") Integer id, RedirectAttributes attr) {
-        try {
-            projetoService.excluir(id);
-            attr.addFlashAttribute("sucesso", "projeto.delete.success");
-        } catch (Exception e) {
-            attr.addFlashAttribute("falha", e.getMessage());
-        }
-        return "redirect:/admin/projetos/listar";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Integer id) {
+        service.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 }

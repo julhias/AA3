@@ -1,61 +1,52 @@
 package br.ufscar.dc.dsw.controllers;
 
+import br.ufscar.dc.dsw.dto.ProjetoDTO;
+import br.ufscar.dc.dsw.dto.SessaoDTO;
+import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Usuario;
-import br.ufscar.dc.dsw.repositories.EstrategiaRepository;
-import br.ufscar.dc.dsw.repositories.UsuarioRepository;
-import br.ufscar.dc.dsw.services.EstrategiaService;
-import br.ufscar.dc.dsw.services.ProjetoService;
 import br.ufscar.dc.dsw.services.SessaoService;
+import br.ufscar.dc.dsw.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@RequestMapping("/testador")
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/tester")
 public class TesterController {
 
     @Autowired
-    private EstrategiaRepository estrategiaRepository;
+    private UsuarioService usuarioService;
+
     @Autowired
     private SessaoService sessaoService;
+
     @Autowired
-    private ProjetoService projetoService;
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private EntityMapper mapper;
 
-    @GetMapping("/home")
-    public String homeTestador() {
-        return "tester/home";
+    @GetMapping("/sessoes")
+    public ResponseEntity<List<SessaoDTO>> minhasSessoes(@AuthenticationPrincipal UserDetails userDetails) {
+        Usuario testador = usuarioService.buscarPorLogin(userDetails.getUsername());
+        List<SessaoDTO> dtos = sessaoService.buscarPorTestador(testador)
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
-
-    @GetMapping("/estrategias")
-    public String listarEstrategiasTestador(Model model) {
-        model.addAttribute("estrategias", estrategiaRepository.findAll());
-        return "public/lista_estrategias";
-    }
-
-    @GetMapping("/minhas-sessoes")
-    public String minhasSessoes(Model model) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Usuario testador = usuarioRepository.findByLogin(username).orElseThrow(() -> new RuntimeException("Testador não encontrado."));
-        model.addAttribute("sessoes", sessaoService.buscarPorTestador(testador));
-        return "sessao/lista";
-    }
-
-    @GetMapping("/criar-sessao")
-    public String criarSessao(Model model) {
-        model.addAttribute("projetos", projetoService.buscarTodos());
-        return "tester/escolher-projeto";
-    }
-
-    @GetMapping("/meus-projetos")
-    public String meusProjetos(Model model) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Usuario testador = usuarioRepository.findByLogin(username).orElseThrow(() -> new RuntimeException("Testador não encontrado."));
-        model.addAttribute("projetos", testador.getProjetos());
-        return "tester/meus_projetos";
+    
+    @GetMapping("/projetos")
+    public ResponseEntity<List<ProjetoDTO>> meusProjetos(@AuthenticationPrincipal UserDetails userDetails) {
+        Usuario testador = usuarioService.buscarPorLogin(userDetails.getUsername());
+        List<ProjetoDTO> dtos = testador.getProjetos()
+                .stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 }
