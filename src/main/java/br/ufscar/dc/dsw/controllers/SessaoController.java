@@ -33,8 +33,6 @@ public class SessaoController {
     @GetMapping("/{id}")
     public ResponseEntity<SessaoDTO> buscarSessao(@PathVariable Integer id) {
         Sessao sessao = sessaoService.buscarPorId(id);
-        // A segurança (verificar se o usuário pode ver esta sessão) pode ser
-        // adicionada no service ou com anotações de segurança.
         return ResponseEntity.ok(mapper.toDTO(sessao));
     }
 
