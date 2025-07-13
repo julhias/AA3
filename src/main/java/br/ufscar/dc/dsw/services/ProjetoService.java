@@ -60,7 +60,6 @@ public class ProjetoService {
         if (!projetoRepository.existsById(id)) {
             throw new EntityNotFoundException("Projeto não encontrado com o ID: " + id);
         }
-        // Adicionar aqui a lógica para desvincular de sessões, se necessário
         projetoRepository.deleteById(id);
     }
 
