@@ -18,7 +18,6 @@ import br.ufscar.dc.dsw.repositories.UsuarioRepository;
 public class UsuarioDetailsService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
-    // Adicione esta linha
     private static final Logger logger = LoggerFactory.getLogger(UsuarioDetailsService.class);
 
     public UsuarioDetailsService(UsuarioRepository usuarioRepository) {
@@ -27,7 +26,7 @@ public class UsuarioDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        // Este log vai nos mostrar o início do ciclo
+        // Este log mostra o início do ciclo
         logger.error("!!!!!!!!!! FUI CHAMADO PARA BUSCAR O USUÁRIO: {} !!!!!!!!!!", login);
 
         Usuario usuario = usuarioRepository.findByLogin(login)
