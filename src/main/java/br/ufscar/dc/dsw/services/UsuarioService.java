@@ -21,7 +21,7 @@ public class UsuarioService {
     private PasswordEncoder passwordEncoder;
 
     public Usuario salvar(Usuario usuario, String senhaNaoCodificada) {
-        // Se uma senha for fornecida, codifique-a antes de salvar
+    
         if (senhaNaoCodificada != null && !senhaNaoCodificada.isEmpty()) {
             usuario.setSenha(passwordEncoder.encode(senhaNaoCodificada));
         }
@@ -49,7 +49,6 @@ public class UsuarioService {
         if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Usuário não encontrado com o ID: " + id);
         }
-        // Adicionar lógica de verificação se o usuário tem dependências
         repository.deleteById(id);
     }
 }
