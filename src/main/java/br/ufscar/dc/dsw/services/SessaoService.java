@@ -50,8 +50,7 @@ public class SessaoService {
         
         return sessaoRepository.save(sessao);
     }
-
-    // MÉTODO ATUALIZADO - Resolve o erro de "iniciarSessao"
+ 
     public void iniciarSessao(Integer id, String username) {
         Sessao sessao = this.buscarPorId(id);
         verificarDono(sessao, username, "iniciar");
@@ -63,7 +62,7 @@ public class SessaoService {
         sessao.setInicioEm(LocalDateTime.now());
     }
 
-    // MÉTODO ATUALIZADO - Resolve o erro de "finalizarSessao"
+    
     public void finalizarSessao(Integer id, String username) {
         Sessao sessao = this.buscarPorId(id);
         verificarDono(sessao, username, "finalizar");
@@ -75,7 +74,6 @@ public class SessaoService {
         sessao.setFinalizadoEm(LocalDateTime.now());
     }
 
-    // MÉTODO ATUALIZADO - Resolve o erro de "adicionarBug"
     public Bug adicionarBug(Integer sessaoId, BugDTO bugDto, String username) {
         Sessao sessao = this.buscarPorId(sessaoId);
         verificarDono(sessao, username, "adicionar bugs");
@@ -95,7 +93,7 @@ public class SessaoService {
         }
     }
 
-    // Métodos de busca (sem alteração necessária)
+    // Métodos de busca 
     @Transactional(readOnly = true)
     public Sessao buscarPorId(Integer id) {
         return sessaoRepository.findById(id)
@@ -114,6 +112,6 @@ public class SessaoService {
 
     @Scheduled(fixedRate = 60000)
     public void finalizarSessoesAutomaticamente() {
-        // Lógica de finalização automática (sem alteração necessária)
+        // Lógica de finalização automática 
     }
 }
