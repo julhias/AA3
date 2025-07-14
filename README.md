@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # Sistema de Apoio a Testes Exploratórios em Video Games
 
 # Descrição

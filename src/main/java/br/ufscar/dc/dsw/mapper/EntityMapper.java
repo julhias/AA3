@@ -1,6 +1,6 @@
 package br.ufscar.dc.dsw.mapper;
 
-import br.ufscar.dc.dsw.dto.*;
+import br.ufscar.dc.dsw.dtos.*;
 import br.ufscar.dc.dsw.model.*;
 import org.springframework.stereotype.Component;
 

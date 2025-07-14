@@ -1,6 +1,6 @@
 package br.ufscar.dc.dsw.controllers;
 
-import br.ufscar.dc.dsw.dto.ProjetoDTO;
+import br.ufscar.dc.dsw.dtos.ProjetoDTO;
 import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Projeto;
 import br.ufscar.dc.dsw.services.ProjetoService;
