@@ -72,7 +72,7 @@ public class SessaoController {
         // Cria uma nova sessão com base nos dados recebidos e no testador logado
         Sessao novaSessao = sessaoService.criarSessao(dto, testador);
 
-        // Constrói a URI do recurso criado (boa prática REST)
+        // Constrói a URI do recurso criado
         URI location = URI.create(String.format("/api/sessoes/%d", novaSessao.getId()));
 
         // Retorna status 201 Created com a URI e o corpo contendo o novo DTO
