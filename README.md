@@ -44,3 +44,11 @@ O sistema segue a arquitetura Modelo-Visão-Controlador (MVC), utilizando as seg
 =======
 # AA3
 
+O sistema foi transformado em uma  API RESTful, desacoplando a lógica de negócios do backend do frontend. 
+
+A implementação seguiu uma arquitetura em camadas, utilizando as tecnologias centrais do Spring:
+
+ * Controladores (Controllers): Foram criados RestControllers para cada recurso principal da aplicação, como ProjetoAdminController, UsuarioController, EstrategiaAdminController e SessaoController. Cada controlador tem endpoints HTTP (GET, POST, PUT, DELETE) para realizar as operações de CRUD sobre os recursos.
+ * Segurança com JWT (JSON Web Tokens): A segurança da API foi implementada utilizando Spring Security com autenticação baseada em token JWT. As regras de autorização foram definidas no WebSecurityConfig, restringindo o acesso a endpoints específicos com base nos papéisndo usuário (ex: ADMIN, TESTER).
+ * Abstração com DTO: Para proteger a estrutura interna do banco de dados e otimizar os dados trafegados, foram criados DTOs para cada entidade (ex: ProjetoDTO, UsuarioDTO). A classe EntityMapper é responsável por fazer a conversão entre as entidades do banco de dados e seus respectivos DTOs.
+ * Camada de Serviço e Repositório: A lógica de negócios, como salvar um projeto e associar seus testadores, permanece na camada de Serviço (Services). A camada de Repositório (Repositories) continua responsável pela persistência dos dados, utilizando Spring Data JPA para interagir com o banco de dados PostgreSQL.
