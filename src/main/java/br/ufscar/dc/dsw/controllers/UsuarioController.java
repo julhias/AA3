@@ -1,6 +1,6 @@
 package br.ufscar.dc.dsw.controllers;
 
-import br.ufscar.dc.dsw.dto.UsuarioDTO;
+import br.ufscar.dc.dsw.dtos.UsuarioDTO;
 import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Usuario;
 import br.ufscar.dc.dsw.services.UsuarioService;
@@ -40,24 +40,31 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<UsuarioDTO> criar(@Valid @RequestBody UsuarioDTO dto) {
         Usuario usuario = mapper.toEntity(dto);
-        // O service é responsável por codificar a senha
         Usuario usuarioSalvo = service.salvar(usuario, dto.getSenha());
 
         URI location = URI.create(String.format("/api/admin/usuarios/%d", usuarioSalvo.getId()));
         return ResponseEntity.created(location).body(mapper.toDTO(usuarioSalvo));
     }
 
+    //não é parcial, mas tem verificação se a senha sofreu alterações
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioDTO dto) {
         Usuario usuarioExistente = service.buscarPorId(id);
+
+        if (usuarioExistente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         usuarioExistente.setNome(dto.getNome());
         usuarioExistente.setLogin(dto.getLogin());
         usuarioExistente.setTipo(dto.getTipo());
 
-        // O service lida com a lógica de atualizar a senha apenas se ela for fornecida
-        Usuario usuarioAtualizado = service.salvar(usuarioExistente, dto.getSenha());
-
-        return ResponseEntity.ok(mapper.toDTO(usuarioAtualizado));
+        if (dto.getSenha() != null && !dto.getSenha().isBlank()) {
+            service.salvar(usuarioExistente, dto.getSenha());
+        } else {
+            service.salvar(usuarioExistente);
+        }
+        return ResponseEntity.ok(mapper.toDTO(usuarioExistente));
     }
 
     @DeleteMapping("/{id}")

@@ -1,4 +1,4 @@
-package br.ufscar.dc.dsw.dto;
+package br.ufscar.dc.dsw.dtos;
 
 import br.ufscar.dc.dsw.model.enums.Role;
 
@@ -6,10 +6,9 @@ public class UsuarioDTO {
     private Long id;
     private String nome;
     private String login;
-    private String senha; // Usado para input (criar/atualizar), mas não para output
+    private String senha;
     private Role tipo;
 
-    // GETTERS E SETTERS
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }

@@ -1,6 +1,6 @@
 package br.ufscar.dc.dsw.controllers;
 
-import br.ufscar.dc.dsw.dto.EstrategiaDTO;
+import br.ufscar.dc.dsw.dtos.EstrategiaDTO;
 import br.ufscar.dc.dsw.model.Estrategia;
 import br.ufscar.dc.dsw.services.EstrategiaService;
 import br.ufscar.dc.dsw.mapper.EntityMapper; // Verifique o nome do seu pacote mapper

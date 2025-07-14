@@ -1,4 +1,4 @@
-package br.ufscar.dc.dsw.dto;
+package br.ufscar.dc.dsw.dtos;
 
 public class SessaoCreateDTO {
     private String titulo;

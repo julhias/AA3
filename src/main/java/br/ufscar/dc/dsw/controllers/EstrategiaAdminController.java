@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.ufscar.dc.dsw.dto.EstrategiaDTO;
+import br.ufscar.dc.dsw.dtos.EstrategiaDTO;
 import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Estrategia;
 import br.ufscar.dc.dsw.services.EstrategiaService;

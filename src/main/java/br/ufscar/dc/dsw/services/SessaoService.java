@@ -9,8 +9,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.ufscar.dc.dsw.dto.BugDTO;
-import br.ufscar.dc.dsw.dto.SessaoCreateDTO;
+import br.ufscar.dc.dsw.dtos.BugDTO;
+import br.ufscar.dc.dsw.dtos.SessaoCreateDTO;
 import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Bug;
 import br.ufscar.dc.dsw.model.Estrategia;

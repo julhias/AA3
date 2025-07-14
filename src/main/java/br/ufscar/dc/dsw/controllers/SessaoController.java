@@ -1,8 +1,8 @@
 package br.ufscar.dc.dsw.controllers;
 
-import br.ufscar.dc.dsw.dto.BugDTO;
-import br.ufscar.dc.dsw.dto.SessaoCreateDTO;
-import br.ufscar.dc.dsw.dto.SessaoDTO;
+import br.ufscar.dc.dsw.dtos.BugDTO;
+import br.ufscar.dc.dsw.dtos.SessaoCreateDTO;
+import br.ufscar.dc.dsw.dtos.SessaoDTO;
 import br.ufscar.dc.dsw.mapper.EntityMapper;
 import br.ufscar.dc.dsw.model.Bug;
 import br.ufscar.dc.dsw.model.Sessao;

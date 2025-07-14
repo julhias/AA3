@@ -20,11 +20,12 @@ public class UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public Usuario salvar(Usuario usuario, String senhaNaoCodificada) {
-    
-        if (senhaNaoCodificada != null && !senhaNaoCodificada.isEmpty()) {
-            usuario.setSenha(passwordEncoder.encode(senhaNaoCodificada));
-        }
+    public Usuario salvar(Usuario usuario, String senha) {
+        usuario.setSenha(passwordEncoder.encode(senha));
+        return repository.save(usuario);
+    }
+
+    public Usuario salvar(Usuario usuario) {
         return repository.save(usuario);
     }
 
