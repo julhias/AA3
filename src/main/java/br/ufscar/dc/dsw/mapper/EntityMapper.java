@@ -10,10 +10,6 @@ import java.util.stream.Collectors;
 @Component
 public class EntityMapper {
 
-    // ======================================================
-    // Mapeamento de PROJETO
-    // ======================================================
-
     public ProjetoDTO toDTO(Projeto projeto) {
         if (projeto == null) {
             return null;
@@ -23,8 +19,7 @@ public class EntityMapper {
         dto.setNome(projeto.getNome());
         dto.setDescricao(projeto.getDescricao());
         dto.setCriadoEm(projeto.getCriadoEm());
-        
-        // Evita NullPointerException se a lista de usuários for nula
+
         if (projeto.getUsuarios() != null) {
             dto.setTestadoresIds(projeto.getUsuarios().stream()
                 .map(Usuario::getId)
@@ -44,14 +39,8 @@ public class EntityMapper {
         projeto.setId(dto.getId());
         projeto.setNome(dto.getNome());
         projeto.setDescricao(dto.getDescricao());
-        // A lista de 'testadores' deve ser populada no Service,
-        // que buscará os usuários pelos IDs recebidos no DTO.
         return projeto;
     }
-
-    // ======================================================
-    // Mapeamento de ESTRATÉGIA
-    // ======================================================
 
     public EstrategiaDTO toDTO(Estrategia estrategia) {
         if (estrategia == null) {
@@ -78,10 +67,7 @@ public class EntityMapper {
         estrategia.setDicas(dto.getDicas());
         return estrategia;
     }
-    
-    // ======================================================
-    // Mapeamento de SESSÃO
-    // ======================================================
+
 
     public SessaoDTO toDTO(Sessao sessao) {
         if (sessao == null) {
@@ -94,8 +80,7 @@ public class EntityMapper {
         dto.setTempoDefinido(sessao.getTempoDefinido());
         dto.setStatus(sessao.getStatus());
         dto.setCriadoEm(sessao.getCriadoEm());
-        
-        // Mapeia os IDs das entidades relacionadas para evitar objetos aninhados
+
         if (sessao.getProjeto() != null) {
             dto.setProjetoId(sessao.getProjeto().getId());
         }
@@ -109,7 +94,6 @@ public class EntityMapper {
         return dto;
     }
 
-    // Nota: Criamos um método específico para SessaoCreateDTO, pois o fluxo é diferente.
     public Sessao toEntity(SessaoCreateDTO createDto) {
         if (createDto == null) {
             return null;
@@ -118,14 +102,9 @@ public class EntityMapper {
         sessao.setTitulo(createDto.getTitulo());
         sessao.setDescricao(createDto.getDescricao());
         sessao.setTempoDefinido(createDto.getTempoDefinido());
-        // As entidades 'projeto', 'estrategia' e 'testador' devem ser
-        // buscadas e associadas na camada de Service.
         return sessao;
     }
 
-    // ======================================================
-    // Mapeamento de USUÁRIO
-    // ======================================================
 
     public UsuarioDTO toDTO(Usuario usuario) {
         if (usuario == null) {
@@ -136,7 +115,6 @@ public class EntityMapper {
         dto.setNome(usuario.getNome());
         dto.setLogin(usuario.getLogin());
         dto.setTipo(usuario.getTipo());
-        // A senha NUNCA é enviada no DTO de resposta.
         return dto;
     }
 

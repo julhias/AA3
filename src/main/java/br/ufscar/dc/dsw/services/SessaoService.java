@@ -21,7 +21,7 @@ import br.ufscar.dc.dsw.model.enums.SessionStatus;
 import br.ufscar.dc.dsw.repositories.BugRepository;
 import br.ufscar.dc.dsw.repositories.EstrategiaRepository;
 import br.ufscar.dc.dsw.repositories.ProjetoRepository;
-import br.ufscar.dc.dsw.repositories.SessaoRepository;
+import br.ufscar.dc.dsw.repositories.SessaoRepository; // Correto: você está usando SessaoRepository
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -34,7 +34,6 @@ public class SessaoService {
     @Autowired private EstrategiaRepository estrategiaRepository;
     @Autowired private EntityMapper mapper;
 
-    // MÉTODO NOVO - Resolve o erro "cannot find symbol: method criarSessao"
     public Sessao criarSessao(SessaoCreateDTO dto, Usuario testador) {
         Sessao sessao = mapper.toEntity(dto);
 
@@ -42,15 +41,16 @@ public class SessaoService {
                 .orElseThrow(() -> new EntityNotFoundException("Projeto não encontrado com o ID: " + dto.getProjetoId()));
         Estrategia estrategia = estrategiaRepository.findById(dto.getEstrategiaId())
                 .orElseThrow(() -> new EntityNotFoundException("Estratégia não encontrada com o ID: " + dto.getEstrategiaId()));
-        
+
         sessao.setProjeto(projeto);
         sessao.setEstrategia(estrategia);
         sessao.setTestador(testador);
         sessao.setStatus(SessionStatus.CRIADA);
-        
+        sessao.setCriadoEm(LocalDateTime.now());
+
         return sessaoRepository.save(sessao);
     }
- 
+
     public void iniciarSessao(Integer id, String username) {
         Sessao sessao = this.buscarPorId(id);
         verificarDono(sessao, username, "iniciar");
@@ -60,9 +60,10 @@ public class SessaoService {
         }
         sessao.setStatus(SessionStatus.EM_ANDAMENTO);
         sessao.setInicioEm(LocalDateTime.now());
+        sessaoRepository.save(sessao);
     }
 
-    
+
     public void finalizarSessao(Integer id, String username) {
         Sessao sessao = this.buscarPorId(id);
         verificarDono(sessao, username, "finalizar");
@@ -72,6 +73,7 @@ public class SessaoService {
         }
         sessao.setStatus(SessionStatus.FINALIZADA);
         sessao.setFinalizadoEm(LocalDateTime.now());
+        sessaoRepository.save(sessao);
     }
 
     public Bug adicionarBug(Integer sessaoId, BugDTO bugDto, String username) {
@@ -83,23 +85,22 @@ public class SessaoService {
         }
         Bug bug = mapper.toEntity(bugDto);
         bug.setSessao(sessao);
+        bug.setTimestamp(LocalDateTime.now()); // Adicionei esta linha para registrar o timestamp do bug
         return bugRepository.save(bug);
     }
-    
-    // Método auxiliar de segurança
+
     private void verificarDono(Sessao sessao, String username, String acao) {
-        if (!sessao.getTestador().getLogin().equals(username)) {
+        if (sessao.getTestador() == null || !sessao.getTestador().getLogin().equals(username)) {
             throw new AccessDeniedException(String.format("Acesso negado. Você não tem permissão para %s esta sessão.", acao));
         }
     }
 
-    // Métodos de busca 
     @Transactional(readOnly = true)
     public Sessao buscarPorId(Integer id) {
         return sessaoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sessão não encontrada com o ID: " + id));
     }
-    
+
     @Transactional(readOnly = true)
     public List<Sessao> buscarPorTestador(Usuario testador) {
         return sessaoRepository.findByTestadorOrderByCriadoEmDesc(testador);
@@ -111,7 +112,25 @@ public class SessaoService {
     }
 
     @Scheduled(fixedRate = 60000)
+    @Transactional
     public void finalizarSessoesAutomaticamente() {
-        // Lógica de finalização automática 
+        LocalDateTime limiteTempo = LocalDateTime.now().minusHours(1);
+
+        List<Sessao> sessoesParaFinalizar = sessaoRepository.findByStatusAndInicioEmBefore(
+                SessionStatus.EM_ANDAMENTO,
+                limiteTempo
+        );
+
+        if (!sessoesParaFinalizar.isEmpty()) {
+            System.out.println("Finalizando automaticamente " + sessoesParaFinalizar.size() + " sessões expiradas...");
+            for (Sessao sessao : sessoesParaFinalizar) {
+                sessao.setStatus(SessionStatus.FINALIZADA);
+                sessao.setFinalizadoEm(LocalDateTime.now());
+                sessaoRepository.save(sessao);
+            }
+            System.out.println("Finalização automática concluída.");
+        } else {
+            System.out.println("Nenhuma sessão 'EM_ANDAMENTO' expirada para finalizar automaticamente.");
+        }
     }
 }

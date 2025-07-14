@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,9 +34,7 @@ public class EstrategiaAdminController {
 
     @GetMapping
     public ResponseEntity<List<EstrategiaDTO>> listarTodos() {
-        // 1. O service retorna uma lista de Entidades
         List<Estrategia> estrategias = service.buscarTodos();
-        // 2. O controller mapeia a lista de Entidades para uma lista de DTOs
         List<EstrategiaDTO> dtos = estrategias.stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
@@ -50,21 +49,28 @@ public class EstrategiaAdminController {
 
     @PostMapping
     public ResponseEntity<EstrategiaDTO> criar(@Valid @RequestBody EstrategiaDTO dto) {
-        // 1. O controller mapeia o DTO recebido para uma Entidade
         Estrategia estrategia = mapper.toEntity(dto);
-        // 2. O service recebe e salva a Entidade
         Estrategia estrategiaSalva = service.salvar(estrategia);
-
         URI location = URI.create(String.format("/api/admin/estrategias/%d", estrategiaSalva.getId()));
         return ResponseEntity.created(location).body(mapper.toDTO(estrategiaSalva));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EstrategiaDTO> atualizar(@PathVariable Integer id, @Valid @RequestBody EstrategiaDTO dto) {
-        // 1. O controller mapeia o DTO recebido para uma Entidade com os novos dados
+    public ResponseEntity<EstrategiaDTO> atualizarTotalmente(
+            @PathVariable Integer id,
+            @Valid @RequestBody EstrategiaDTO dto) {
+
         Estrategia dadosParaAtualizar = mapper.toEntity(dto);
-        // 2. O service recebe o ID e a Entidade com os dados para atualizar
-        Estrategia estrategiaAtualizada = service.atualizar(id, dadosParaAtualizar);
+        Estrategia estrategiaAtualizada = service.atualizarTotalmente(id, dadosParaAtualizar);
+
+        return ResponseEntity.ok(mapper.toDTO(estrategiaAtualizada));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<EstrategiaDTO> atualizarParcialmente(
+            @PathVariable Integer id,
+            @RequestBody EstrategiaDTO dto) {
+        Estrategia estrategiaAtualizada = service.atualizarParcialmente(id, dto);
 
         return ResponseEntity.ok(mapper.toDTO(estrategiaAtualizada));
     }
@@ -75,4 +81,3 @@ public class EstrategiaAdminController {
         return ResponseEntity.noContent().build();
     }
 }
-

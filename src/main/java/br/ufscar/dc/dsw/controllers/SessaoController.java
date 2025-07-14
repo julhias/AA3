@@ -30,6 +30,16 @@ public class SessaoController {
     @Autowired
     private EntityMapper mapper;
 
+    @GetMapping("/minhas")
+    public ResponseEntity<List<SessaoDTO>> listarMinhasSessoes(@AuthenticationPrincipal UserDetails userDetails) {
+        Usuario testador = usuarioService.buscarPorLogin(userDetails.getUsername());
+        List<Sessao> sessoesDoTestador = sessaoService.buscarPorTestador(testador);
+        List<SessaoDTO> dtos = sessoesDoTestador.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<SessaoDTO> buscarSessao(@PathVariable Integer id) {
         Sessao sessao = sessaoService.buscarPorId(id);

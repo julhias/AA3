@@ -41,7 +41,6 @@ public class ProjetoAdminController {
     @PostMapping
     public ResponseEntity<ProjetoDTO> criar(@Valid @RequestBody ProjetoDTO dto) {
         Projeto projeto = mapper.toEntity(dto);
-        // A lógica de negócio para associar os testadores está no service
         Projeto projetoSalvo = service.salvar(projeto, dto.getTestadoresIds());
 
         URI location = URI.create(String.format("/api/admin/projetos/%d", projetoSalvo.getId()));

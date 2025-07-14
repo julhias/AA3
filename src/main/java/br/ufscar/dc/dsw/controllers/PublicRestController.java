@@ -3,7 +3,7 @@ package br.ufscar.dc.dsw.controllers;
 import br.ufscar.dc.dsw.dtos.EstrategiaDTO;
 import br.ufscar.dc.dsw.model.Estrategia;
 import br.ufscar.dc.dsw.services.EstrategiaService;
-import br.ufscar.dc.dsw.mapper.EntityMapper; // Verifique o nome do seu pacote mapper
+import br.ufscar.dc.dsw.mapper.EntityMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -2,6 +2,7 @@ package br.ufscar.dc.dsw.services;
 
 import java.util.List;
 
+import br.ufscar.dc.dsw.dtos.EstrategiaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +25,26 @@ public class EstrategiaService {
     public Estrategia salvar(Estrategia estrategia) {
         return estrategiaRepository.save(estrategia);
     }
-    
-    public Estrategia atualizar(Integer id, Estrategia dadosEstrategia) {
-        Estrategia estrategia = this.buscarPorId(id);
-        estrategia.setNome(dadosEstrategia.getNome());
-        estrategia.setDescricao(dadosEstrategia.getDescricao());
-        estrategia.setExemplos(dadosEstrategia.getExemplos());
-        estrategia.setDicas(dadosEstrategia.getDicas());
-        return estrategiaRepository.save(estrategia);
+
+    public Estrategia atualizarTotalmente(Integer id, Estrategia dadosParaAtualizar) {
+        this.buscarPorId(id);
+
+        dadosParaAtualizar.setId(id);
+        return estrategiaRepository.save(dadosParaAtualizar);
+    }
+
+    public Estrategia atualizarParcialmente(Integer id, EstrategiaDTO dto) {
+        Estrategia estrategiaAtual = this.buscarPorId(id);
+
+        if (dto.getNome() != null && !dto.getNome().isBlank()) {
+            estrategiaAtual.setNome(dto.getNome());
+        }
+
+        if (dto.getDescricao() != null && !dto.getDescricao().isBlank()) {
+            estrategiaAtual.setDescricao(dto.getDescricao());
+        }
+
+        return estrategiaRepository.save(estrategiaAtual);
     }
 
     @Transactional(readOnly = true)

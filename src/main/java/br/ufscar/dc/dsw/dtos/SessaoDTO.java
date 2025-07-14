@@ -17,7 +17,6 @@ public class SessaoDTO {
     private Long testadorId;
     private Integer estrategiaId;
 
-    // GETTERS E SETTERS
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public String getTitulo() { return titulo; }

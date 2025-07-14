@@ -46,7 +46,6 @@ public class UsuarioController {
         return ResponseEntity.created(location).body(mapper.toDTO(usuarioSalvo));
     }
 
-    //não é parcial, mas tem verificação se a senha sofreu alterações
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioDTO dto) {
         Usuario usuarioExistente = service.buscarPorId(id);

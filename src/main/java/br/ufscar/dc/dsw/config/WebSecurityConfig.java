@@ -49,7 +49,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtRequestFilter jwtRequestFilter) throws Exception {
-        logger.info(">>> CONFIGURANDO A CADEIA DE FILTROS DE SEGURANÇA (SecurityFilterChain)...");
+        logger.info("CONFIGURANDO A CADEIA DE FILTROS DE SEGURANÇA (SecurityFilterChain)...");
 
         http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -59,6 +59,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/auth/**", "/api/public/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/tester/**").hasRole("TESTER")
+                    .requestMatchers("/api/sessoes/**").hasRole("TESTER")
                 .anyRequest().authenticated()
             );
 

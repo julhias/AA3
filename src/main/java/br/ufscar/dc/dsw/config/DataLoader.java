@@ -26,8 +26,7 @@ public class DataLoader {
 
             Usuario admin = new Usuario("Administrador", "admin@admin.com", passwordEncoder.encode("admin"), Role.ADMIN);
             usuarioRepository.save(admin);
-            
-            // 3. Criamos o usuário tester, criptografando a senha "tester".
+
             Usuario tester = new Usuario("Fulano de Tal", "tester@email.com", passwordEncoder.encode("tester"), Role.TESTER);
             usuarioRepository.save(tester);
 
