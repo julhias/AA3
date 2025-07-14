@@ -1,4 +1,4 @@
-// Define o pacote onde essa classe está localizada (organização do projeto)
+// Define o pacote onde essa classe está localizada
 package br.ufscar.dc.dsw.controllers;
 
 // Importa os DTOs usados para receber/enviar dados de sessão e bug
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/sessoes")
 public class SessaoController {
 
-    // Injeta o serviço de sessão (Spring cuida da criação e gerenciamento)
+    // Injeta o serviço de sessão (spring cuida da criação e gerenciamento)
     @Autowired
     private SessaoService sessaoService;
 
@@ -88,7 +88,7 @@ public class SessaoController {
         // Chama o serviço para iniciar a sessão com base no ID e login do usuário
         sessaoService.iniciarSessao(id, userDetails.getUsername());
 
-        // Retorna 200 OK sem corpo (Void)
+        // Retorna 200 OK sem corpo (void)
         return ResponseEntity.ok().build();
     }
 
@@ -111,7 +111,7 @@ public class SessaoController {
         // Busca os bugs da sessão pelo ID e converte cada um para DTO
         List<BugDTO> dtos = sessaoService.buscarBugsPorSessao(sessaoId)
                 .stream()
-                .map(mapper::toDTO) // Converte Bug → BugDTO
+                .map(mapper::toDTO) // Converte Bug - BugDTO
                 .collect(Collectors.toList());
 
         // Retorna 200 OK com a lista de bugs em formato DTO
